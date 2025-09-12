@@ -1,23 +1,28 @@
 // src/app/(marketing)/projects/page.tsx
-'use client';
-
-import { useMemo, useState } from 'react';
+import {useMemo, useState} from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { PROJECTS } from '@/data/projects';
-import type { Project } from '@/types/project';
-import { Pin, ChevronRight, Search } from '@/components/icons';
+import type {Project} from '@/types/project';
+import {Pin, ChevronRight, Search} from '@/components/icons';
+import {getProjects} from '@/sanity/queries';
 
 type Category = Project['category'];
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const projects = await getProjects();
+  return <ProjectsPageClient projects={projects} />;
+}
+
+function ProjectsPageClient({projects}: {projects: Project[]}) {
+  'use client';
+
   const categories = useMemo<Category[]>(
-    () => Array.from(new Set(PROJECTS.map((p) => p.category))) as Category[],
-    [],
+    () => Array.from(new Set(projects.map(p => p.category))) as Category[],
+    [projects],
   );
   const locations = useMemo<string[]>(
-    () => Array.from(new Set(PROJECTS.map((p) => p.location))),
-    [],
+    () => Array.from(new Set(projects.map(p => p.location))),
+    [projects],
   );
 
   const [q, setQ] = useState('');
@@ -25,7 +30,7 @@ export default function ProjectsPage() {
   const [location, setLocation] = useState<string>('All');
 
   const filtered = useMemo<Project[]>(() => {
-    return PROJECTS.filter((p) => {
+    return projects.filter(p => {
       const byCat = category === 'All' ? true : p.category === category;
       const byLoc = location === 'All' ? true : p.location === location;
       const byQ =
@@ -37,7 +42,7 @@ export default function ProjectsPage() {
               .includes(q.toLowerCase());
       return byCat && byLoc && byQ;
     });
-  }, [category, location, q]);
+  }, [category, location, q, projects]);
 
   return (
     <main className="min-h-screen bg-white">
@@ -53,7 +58,7 @@ export default function ProjectsPage() {
           <div className="relative">
             <input
               value={q}
-              onChange={(e) => setQ(e.target.value)}
+              onChange={e => setQ(e.target.value)}
               placeholder="Search by Project Name"
               className="h-11 w-full rounded-lg border border-black/10 bg-white pr-3 pl-10 text-sm outline-none placeholder:text-neutral-400 focus:ring-2 focus:ring-black/10"
             />
@@ -66,14 +71,12 @@ export default function ProjectsPage() {
             <div className="relative w-1/2">
               <select
                 value={category}
-                onChange={(e) =>
-                  setCategory(e.target.value as 'All' | Category)
-                }
+                onChange={e => setCategory(e.target.value as 'All' | Category)}
                 className="h-11 w-full appearance-none rounded-lg border border-black/10 bg-white pr-9 pl-3 text-sm text-neutral-800 outline-none focus:ring-2 focus:ring-black/10"
                 aria-label="Project category"
               >
                 <option value="All">Project</option>
-                {categories.map((c) => (
+                {categories.map(c => (
                   <option key={c} value={c}>
                     {c}
                   </option>
@@ -86,12 +89,12 @@ export default function ProjectsPage() {
             <div className="relative w-1/2">
               <select
                 value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                onChange={e => setLocation(e.target.value)}
                 className="h-11 w-full appearance-none rounded-lg border border-black/10 bg-white pr-9 pl-3 text-sm text-neutral-800 outline-none focus:ring-2 focus:ring-black/10"
                 aria-label="Location"
               >
                 <option value="All">Location</option>
-                {locations.map((loc) => (
+                {locations.map(loc => (
                   <option key={loc} value={loc}>
                     {loc}
                   </option>
@@ -104,7 +107,7 @@ export default function ProjectsPage() {
 
         {/* Grid */}
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((p) => (
+          {filtered.map(p => (
             <Card key={p.slug} p={p} />
           ))}
         </div>

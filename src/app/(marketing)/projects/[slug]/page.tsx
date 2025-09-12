@@ -2,19 +2,20 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { PROJECTS } from '@/data/projects';
+import {getProject, getProjects} from '@/sanity/queries';
 
 type PageProps = { params: Promise<{ slug: string }> };
 
 // ----- Static params for SSG -----
-export function generateStaticParams() {
-  return PROJECTS.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  const projects = await getProjects();
+  return projects.map(p => ({slug: p.slug}));
 }
 
 // ----- Dynamic <head> -----
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const p = PROJECTS.find((x) => x.slug === slug);
+  const p = await getProject(slug);
 
   const DEFAULT_DESC =
     'Discover real estate investment opportunities and find your perfect place in the UAE.';
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 // ----- Page -----
 export default async function ProjectDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const p = PROJECTS.find((x) => x.slug === slug);
+  const p = await getProject(slug);
   if (!p) return notFound();
 
   return (
