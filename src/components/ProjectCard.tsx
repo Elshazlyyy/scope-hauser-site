@@ -17,7 +17,7 @@ export default function ProjectCard({ project }: { project: Project }) {
       </div>
       <div className="space-y-2 p-4">
         <div className="text-xs tracking-wide text-neutral-500 uppercase">
-          {project.category} · {project.location}
+          {project.propertyType} · {project.location}
         </div>
         <h3 className="text-lg font-semibold">{project.title}</h3>
         <p className="line-clamp-2 text-sm text-neutral-600">

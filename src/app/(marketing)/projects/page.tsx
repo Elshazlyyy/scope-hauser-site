@@ -6,7 +6,7 @@ import type {Project} from '@/types/project';
 import {Pin, ChevronRight, Search} from '@/components/icons';
 import {getProjects} from '@/sanity/queries';
 
-type Category = Project['category'];
+type PropertyType = Project['propertyType'];
 
 export default async function ProjectsPage() {
   const projects = await getProjects();
@@ -16,8 +16,8 @@ export default async function ProjectsPage() {
 function ProjectsPageClient({projects}: {projects: Project[]}) {
   'use client';
 
-  const categories = useMemo<Category[]>(
-    () => Array.from(new Set(projects.map(p => p.category))) as Category[],
+  const propertyTypes = useMemo<PropertyType[]>(
+    () => Array.from(new Set(projects.map(p => p.propertyType))) as PropertyType[],
     [projects],
   );
   const locations = useMemo<string[]>(
@@ -26,23 +26,23 @@ function ProjectsPageClient({projects}: {projects: Project[]}) {
   );
 
   const [q, setQ] = useState('');
-  const [category, setCategory] = useState<'All' | Category>('All');
+  const [propertyType, setPropertyType] = useState<'All' | PropertyType>('All');
   const [location, setLocation] = useState<string>('All');
 
   const filtered = useMemo<Project[]>(() => {
     return projects.filter(p => {
-      const byCat = category === 'All' ? true : p.category === category;
+      const byType = propertyType === 'All' ? true : p.propertyType === propertyType;
       const byLoc = location === 'All' ? true : p.location === location;
       const byQ =
         q.trim() === ''
           ? true
-          : [p.title, p.location, p.category]
+          : [p.title, p.location, p.propertyType]
               .join(' ')
               .toLowerCase()
               .includes(q.toLowerCase());
-      return byCat && byLoc && byQ;
+      return byType && byLoc && byQ;
     });
-  }, [category, location, q, projects]);
+  }, [propertyType, location, q, projects]);
 
   return (
     <main className="min-h-screen bg-white">
@@ -67,16 +67,16 @@ function ProjectsPageClient({projects}: {projects: Project[]}) {
 
           {/* Right selects */}
           <div className="flex items-center gap-4">
-            {/* Category */}
+            {/* Property Type */}
             <div className="relative w-1/2">
               <select
-                value={category}
-                onChange={e => setCategory(e.target.value as 'All' | Category)}
+                value={propertyType}
+                onChange={e => setPropertyType(e.target.value as 'All' | PropertyType)}
                 className="h-11 w-full appearance-none rounded-lg border border-black/10 bg-white pr-9 pl-3 text-sm text-neutral-800 outline-none focus:ring-2 focus:ring-black/10"
-                aria-label="Project category"
+                aria-label="Property type"
               >
-                <option value="All">Project</option>
-                {categories.map(c => (
+                <option value="All">Property Type</option>
+                {propertyTypes.map(c => (
                   <option key={c} value={c}>
                     {c}
                   </option>
