@@ -8,11 +8,14 @@ import { PROJECTS } from '@/data/projects';
 import type { Project } from '@/types/project';
 import { Pin, ChevronRight, Search } from '@/components/icons';
 
-type Category = Project['category'];
+type PropertyType = NonNullable<Project['propertyType']>;
 
 export default function ProjectsPage() {
-  const categories = useMemo<Category[]>(
-    () => Array.from(new Set(PROJECTS.map((p) => p.category))) as Category[],
+  const propertyTypes = useMemo<PropertyType[]>(
+    () =>
+      Array.from(
+        new Set(PROJECTS.map((p) => p.propertyType).filter(Boolean)),
+      ) as PropertyType[],
     [],
   );
   const locations = useMemo<string[]>(
@@ -21,23 +24,25 @@ export default function ProjectsPage() {
   );
 
   const [q, setQ] = useState('');
-  const [category, setCategory] = useState<'All' | Category>('All');
+  const [propertyType, setPropertyType] = useState<'All' | PropertyType>('All');
   const [location, setLocation] = useState<string>('All');
 
   const filtered = useMemo<Project[]>(() => {
     return PROJECTS.filter((p) => {
-      const byCat = category === 'All' ? true : p.category === category;
+      const byType =
+        propertyType === 'All' ? true : p.propertyType === propertyType;
       const byLoc = location === 'All' ? true : p.location === location;
       const byQ =
         q.trim() === ''
           ? true
-          : [p.title, p.location, p.category]
+          : [p.name, p.location, p.propertyType]
+              .filter(Boolean)
               .join(' ')
               .toLowerCase()
               .includes(q.toLowerCase());
-      return byCat && byLoc && byQ;
+      return byType && byLoc && byQ;
     });
-  }, [category, location, q]);
+  }, [propertyType, location, q]);
 
   return (
     <main className="min-h-screen bg-white">
@@ -62,18 +67,18 @@ export default function ProjectsPage() {
 
           {/* Right selects */}
           <div className="flex items-center gap-4">
-            {/* Category */}
+            {/* Property type */}
             <div className="relative w-1/2">
               <select
-                value={category}
+                value={propertyType}
                 onChange={(e) =>
-                  setCategory(e.target.value as 'All' | Category)
+                  setPropertyType(e.target.value as 'All' | PropertyType)
                 }
                 className="h-11 w-full appearance-none rounded-lg border border-black/10 bg-white pr-9 pl-3 text-sm text-neutral-800 outline-none focus:ring-2 focus:ring-black/10"
-                aria-label="Project category"
+                aria-label="Property type"
               >
-                <option value="All">Project</option>
-                {categories.map((c) => (
+                <option value="All">Property Type</option>
+                {propertyTypes.map((c) => (
                   <option key={c} value={c}>
                     {c}
                   </option>
@@ -121,15 +126,15 @@ function Card({ p }: { p: Project }) {
       {/* Full-card link */}
       <Link
         href={`/projects/${p.slug}`}
-        aria-label={`View details for ${p.title}`}
+        aria-label={`View details for ${p.name}`}
         className="absolute inset-0 z-10"
       />
 
       {/* Image (no rounded corners) */}
       <figure className="relative aspect-[4/3] w-full">
         <Image
-          src={p.thumbnail || p.hero}
-          alt={p.title}
+          src={p.image1?.src || p.image2?.src || ''}
+          alt={p.image1?.alt || p.image2?.alt || p.name}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           sizes="(min-width:1280px) 33vw, (min-width:768px) 50vw, 100vw"
@@ -140,7 +145,7 @@ function Card({ p }: { p: Project }) {
       {/* Body: Title + Location */}
       <div className="p-6">
         <h3 className="text-[28px] leading-snug font-semibold text-[#2B3119] sm:text-[32px]">
-          {p.title}
+          {p.name}
         </h3>
 
         <div className="mt-3 inline-flex items-center gap-1 text-[16px] text-neutral-700 sm:text-[18px]">
