@@ -1,14 +1,19 @@
-'use client';
-
 import Link from 'next/link';
 import useEmblaCarousel from 'embla-carousel-react';
-import { useCallback, useEffect, useState } from 'react';
-import { PROJECTS } from '@/data/projects';
+import {useCallback, useEffect, useState} from 'react';
 import ProjectCarouselCard from './ProjectCarouselCard';
-import { ChevronLeft, ChevronRight } from './icons';
+import {ChevronLeft, ChevronRight} from './icons';
 import styles from './ProjectsCarousel.module.css'; // 👈 import local CSS
+import {getProjects} from '@/sanity/queries';
+import type {Project} from '@/types/project';
 
-export default function ProjectsCarousel() {
+export default async function ProjectsCarousel() {
+  const projects = await getProjects();
+  return <ProjectsCarouselClient projects={projects} />;
+}
+
+function ProjectsCarouselClient({projects}: {projects: Project[]}) {
+  'use client';
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
     loop: false,
@@ -65,7 +70,7 @@ export default function ProjectsCarousel() {
               <div
                 className={`h-screen overflow-y-auto snap-y snap-mandatory space-y-4 ${styles['hide-scrollbar']}`}
               >
-                {PROJECTS.map((p) => (
+                {projects.map(p => (
                   <div key={p.slug} className="h-1/3 snap-start">
                     <ProjectCarouselCard p={p} />
                   </div>
@@ -76,7 +81,7 @@ export default function ProjectsCarousel() {
             {/* Desktop/Tablet horizontal carousel */}
             <div className="hidden sm:block overflow-hidden" ref={emblaRef}>
               <div className="flex select-none touch-pan-y gap-8">
-                {PROJECTS.map((p) => (
+                {projects.map(p => (
                   <div
                     key={p.slug}
                     className="min-w-[280px] shrink-0 sm:min-w-[320px] lg:min-w-[360px]"
