@@ -1,28 +1,34 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import type { Project } from '@/types/project';
+import Link from 'next/link'
+import Image from 'next/image'
+import type { Project } from '@/types/project'
 
 export default function ProjectCard({ project }: { project: Project }) {
+  const src = project.imageUrl || ''
+
   return (
     <article className="overflow-hidden rounded-2xl border transition hover:shadow">
       <div className="relative h-48 w-full">
-        <Image
-          src={project.thumbnail}
-          alt={project.title}
-          fill
-          className="object-cover"
-          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          priority={false}
-        />
+        {src ? (
+          <Image
+            src={src}
+            alt={project.title}
+            fill
+            className="object-cover"
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            priority={false}
+            unoptimized
+          />
+        ) : (
+          <div className="h-full w-full bg-neutral-100" />
+        )}
       </div>
+
       <div className="space-y-2 p-4">
         <div className="text-xs tracking-wide text-neutral-500 uppercase">
-          {project.category} · {project.location}
+          {project.location ? `Project · ${project.location}` : 'Project'}
         </div>
         <h3 className="text-lg font-semibold">{project.title}</h3>
-        <p className="line-clamp-2 text-sm text-neutral-600">
-          {project.summary}
-        </p>
+
         <div className="pt-3">
           <Link
             href={`/projects/${project.slug}`}
@@ -33,5 +39,5 @@ export default function ProjectCard({ project }: { project: Project }) {
         </div>
       </div>
     </article>
-  );
+  )
 }
