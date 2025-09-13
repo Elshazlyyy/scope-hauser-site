@@ -1,3 +1,4 @@
+// src/app/(marketing)/projects/[slug]/page.tsx
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
@@ -18,21 +19,28 @@ export async function generateStaticParams() {
 
 export const revalidate = 600
 
+// ✅ params is a Promise in your env — await it
 export async function generateMetadata(
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
-  const p = await client.fetch<Project | null>(projectBySlugQuery, { slug: params.slug })
-  const DEFAULT_DESC = 'Discover real estate investment opportunities and find your perfect place in the UAE.'
+  const { slug } = await params
+  const p = await client.fetch<Project | null>(projectBySlugQuery, { slug })
+
+  const DEFAULT_DESC =
+    'Discover real estate investment opportunities and find your perfect place in the UAE.'
+
   return {
     title: p ? `${p.title} – Scope Hauser` : 'Project Details – Scope Hauser',
     description: p ? `${p.title}${p.location ? ` in ${p.location}` : ''}. ${DEFAULT_DESC}` : DEFAULT_DESC,
   }
 }
 
+// ✅ Same here: accept Promise and await it
 export default async function ProjectDetailPage(
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const p = await client.fetch<Project | null>(projectBySlugQuery, { slug: params.slug })
+  const { slug } = await params
+  const p = await client.fetch<Project | null>(projectBySlugQuery, { slug })
   if (!p) return notFound()
 
   return (
