@@ -19,9 +19,10 @@ export async function generateStaticParams() {
 export const revalidate = 600
 
 export async function generateMetadata(
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
-  const p = await client.fetch<Project | null>(projectBySlugQuery, { slug: params.slug })
+  const { slug } = await params
+  const p = await client.fetch<Project | null>(projectBySlugQuery, { slug })
   const DEFAULT_DESC = 'Discover real estate investment opportunities and find your perfect place in the UAE.'
   return {
     title: p ? `${p.title} – Scope Hauser` : 'Project Details – Scope Hauser',
@@ -30,9 +31,10 @@ export async function generateMetadata(
 }
 
 export default async function ProjectDetailPage(
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const p = await client.fetch<Project | null>(projectBySlugQuery, { slug: params.slug })
+  const { slug } = await params
+  const p = await client.fetch<Project | null>(projectBySlugQuery, { slug })
   if (!p) return notFound()
 
   return (
