@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: { unoptimized: true }, // dev-only
+  images: {
+    domains: ['cdn.sanity.io'], // allow Sanity’s CDN so Image can optimize assets
+  },
 };
+
 module.exports = nextConfig;
