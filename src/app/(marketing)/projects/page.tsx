@@ -17,18 +17,13 @@ type Project = {
   hero?: string;
 };
 
+// ✅ If schema has only a single `image` field, resolve that directly
 const PROJECTS_QUERY = groq/* groq */ `
 *[_type == "project"] | order(title asc) {
   "slug": slug.current,
   title,
   location,
-  // resolve a concrete URL regardless of how the image is stored
-  "imageUrl": coalesce(
-    image.url,
-    image.asset->url,
-    images[0].url,
-    images[0].asset->url
-  )
+  "imageUrl": image.asset->url
 }
 `;
 
@@ -135,7 +130,8 @@ export default function ProjectsPage() {
                 className="h-11 w-full appearance-none rounded-lg border border-black/10 bg-white pr-9 pl-3 text-sm text-neutral-800 outline-none focus:ring-2 focus:ring-black/10"
                 aria-label="Project category"
               >
-                <option value="All">Project</option>
+                {/* ✅ Fix label for the 'All' option */}
+                <option value="All">All</option>
                 {categories.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
@@ -161,14 +157,14 @@ export default function ProjectsPage() {
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((p) => (<Card key={p.slug} p={p} />))}
+          {filtered.map((p, idx) => (<Card key={p.slug} p={p} priority={idx < 3} />))}
         </div>
       </div>
     </main>
   );
 }
 
-function Card({ p }: { p: Project }) {
+function Card({ p, priority }: { p: Project; priority?: boolean }) {
   const src = p.thumbnail || p.hero || null;
 
   return (
@@ -182,7 +178,8 @@ function Card({ p }: { p: Project }) {
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             sizes="(min-width:1280px) 33vw, (min-width:768px) 50vw, 100vw"
-            priority
+            // ✅ Only prioritize the first few images for performance
+            priority={!!priority}
             unoptimized
           />
         ) : (
