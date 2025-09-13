@@ -5,20 +5,42 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Pin, ChevronRight, Search } from '@/components/icons';
-
-// Sanity
 import { client } from '@/sanity/lib/client';
-import { PROJECTS_QUERY } from '@/sanity/queries';
+import { groq } from 'next-sanity';
 
-// Local shape to match your existing JSX props
 type Project = {
   slug: string;
   title: string;
   location: string;
-  category: string;   // keep UI identical; default to "Project"
+  category: string;
   thumbnail: string;
   hero?: string;
 };
+
+const PROJECTS_QUERY = groq/* groq */ `
+*[_type == "project"] | order(title asc) {
+  "slug": slug.current,
+  title,
+  location,
+  // resolve a concrete URL regardless of how the image is stored
+  "imageUrl": coalesce(
+    image.url,
+    image.asset->url,
+    images[0].url,
+    images[0].asset->url
+  )
+}
+`;
+
+// Simple JS fallback for slug if missing
+const toSlug = (t: string) =>
+  encodeURIComponent(
+    t
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')      // spaces -> dashes
+      .replace(/[^a-z0-9\-]/g, '') // strip non-url-safe (except dash)
+  );
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -26,30 +48,38 @@ export default function ProjectsPage() {
   const [category, setCategory] = useState<'All' | Project['category']>('All');
   const [location, setLocation] = useState<string>('All');
 
-  // Fetch projects from Sanity
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
         const raw = await client.fetch<Array<{
-          slug: string;
+          slug?: string | null;
           title: string;
-          location?: string;
-          imageUrl?: string;
+          location?: string | null;
+          imageUrl?: string | null;
         }>>(PROJECTS_QUERY);
 
         if (!mounted) return;
 
+        if (!raw?.length) {
+          console.warn('[projects] Sanity returned 0 rows. Check: published docs, dataset, CORS, privacy.');
+        } else {
+          console.log('[projects] fetched', raw.length, 'rows. Example:', raw[0]);
+        }
+
         const mapped: Project[] = (raw || [])
-          .filter(r => !!r.slug && !!r.title)
-          .map(r => ({
-            slug: r.slug,
-            title: r.title,
-            location: r.location ?? '',
-            category: 'Project',
-            thumbnail: r.imageUrl ?? '',
-            hero: r.imageUrl ?? '',
-          }));
+          .filter(r => !!r?.title)
+          .map(r => {
+            const safeSlug = r.slug && r.slug.length ? r.slug : toSlug(r.title);
+            return {
+              slug: safeSlug,
+              title: r.title,
+              location: r.location ?? '',
+              category: 'Project',
+              thumbnail: r.imageUrl ?? '',
+              hero: r.imageUrl ?? '',
+            };
+          });
 
         setProjects(mapped);
       } catch (err) {
@@ -59,7 +89,6 @@ export default function ProjectsPage() {
     return () => { mounted = false; };
   }, []);
 
-  // Filters
   const categories = useMemo<Project['category'][]>(
     () => Array.from(new Set(projects.map(p => p.category))) as Project['category'][],
     [projects]
@@ -77,10 +106,7 @@ export default function ProjectsPage() {
       const byQ =
         q.trim() === ''
           ? true
-          : [p.title, p.location, p.category]
-              .join(' ')
-              .toLowerCase()
-              .includes(q.toLowerCase());
+          : [p.title, p.location, p.category].join(' ').toLowerCase().includes(q.toLowerCase());
       return byCat && byLoc && byQ;
     });
   }, [projects, category, location, q]);
@@ -88,14 +114,9 @@ export default function ProjectsPage() {
   return (
     <main className="min-h-screen bg-white">
       <div className="mx-auto w-full max-w-[1720px] px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
-        {/* Header */}
-        <h1 className="text-[28px] font-semibold text-neutral-900 sm:text-[36px]">
-          Our Projects
-        </h1>
+        <h1 className="text-[28px] font-semibold text-neutral-900 sm:text-[36px]">Our Projects</h1>
 
-        {/* Search + Filters */}
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-          {/* Search */}
           <div className="relative">
             <input
               value={q}
@@ -106,29 +127,22 @@ export default function ProjectsPage() {
             <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-neutral-500" />
           </div>
 
-          {/* Right selects */}
           <div className="flex items-center gap-4">
-            {/* Category */}
             <div className="relative w-1/2">
               <select
                 value={category}
-                onChange={(e) =>
-                  setCategory(e.target.value as 'All' | Project['category'])
-                }
+                onChange={(e) => setCategory(e.target.value as 'All' | Project['category'])}
                 className="h-11 w-full appearance-none rounded-lg border border-black/10 bg-white pr-9 pl-3 text-sm text-neutral-800 outline-none focus:ring-2 focus:ring-black/10"
                 aria-label="Project category"
               >
                 <option value="All">Project</option>
                 {categories.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
+                  <option key={c} value={c}>{c}</option>
                 ))}
               </select>
               <ChevronRight className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 rotate-90 text-neutral-500" />
             </div>
 
-            {/* Location */}
             <div className="relative w-1/2">
               <select
                 value={location}
@@ -138,9 +152,7 @@ export default function ProjectsPage() {
               >
                 <option value="All">Location</option>
                 {locations.map((loc) => (
-                  <option key={loc} value={loc}>
-                    {loc}
-                  </option>
+                  <option key={loc} value={loc}>{loc}</option>
                 ))}
               </select>
               <ChevronRight className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 rotate-90 text-neutral-500" />
@@ -148,32 +160,20 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        {/* Grid */}
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((p) => (
-            <Card key={p.slug} p={p} />
-          ))}
+          {filtered.map((p) => (<Card key={p.slug} p={p} />))}
         </div>
       </div>
     </main>
   );
 }
 
-/* ----------------------------- Card component ----------------------------- */
-
 function Card({ p }: { p: Project }) {
   const src = p.thumbnail || p.hero || null;
 
   return (
     <article className="group relative overflow-hidden border border-black/10 bg-white shadow-[0_6px_30px_rgba(0,0,0,0.08)]">
-      {/* Full-card link */}
-      <Link
-        href={`/projects/${encodeURIComponent(p.slug)}`}
-        aria-label={`View details for ${p.title}`}
-        className="absolute inset-0 z-10"
-      />
-
-      {/* Image */}
+      <Link href={`/projects/${encodeURIComponent(p.slug)}`} aria-label={`View details for ${p.title}`} className="absolute inset-0 z-10" />
       <figure className="relative aspect-[4/3] w-full">
         {src ? (
           <Image
@@ -189,12 +189,8 @@ function Card({ p }: { p: Project }) {
           <div className="h-full w-full bg-neutral-100" />
         )}
       </figure>
-
-      {/* Body: Title + Location */}
       <div className="p-6">
-        <h3 className="text-[28px] leading-snug font-semibold text-[#2B3119] sm:text-[32px]">
-          {p.title}
-        </h3>
+        <h3 className="text-[28px] leading-snug font-semibold text-[#2B3119] sm:text-[32px]">{p.title}</h3>
         <div className="mt-3 inline-flex items-center gap-1 text-[16px] text-neutral-700 sm:text-[18px]">
           <Pin className="h-[26px] w-[26px] flex-shrink-0" />
           <span className="relative top-[2px]">{p.location}</span>
