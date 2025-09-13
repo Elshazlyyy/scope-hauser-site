@@ -1,9 +1,9 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import type { Project } from '@/types/project'
+import Link from 'next/link';
+import Image from 'next/image';
+import type { Project } from '@/types/project';
 
 export default function ProjectCard({ project }: { project: Project }) {
-  const src = project.imageUrl || ''
+  const src = project.imageUrl || '';
 
   return (
     <article className="overflow-hidden rounded-2xl border transition hover:shadow">
@@ -16,7 +16,6 @@ export default function ProjectCard({ project }: { project: Project }) {
             className="object-cover"
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             priority={false}
-            unoptimized
           />
         ) : (
           <div className="h-full w-full bg-neutral-100" />
@@ -39,5 +38,5 @@ export default function ProjectCard({ project }: { project: Project }) {
         </div>
       </div>
     </article>
-  )
+  );
 }
