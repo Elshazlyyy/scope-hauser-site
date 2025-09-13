@@ -1,7 +1,7 @@
+// src/sanity/queries.ts
 import { groq } from 'next-sanity'
 
-// List: only title, location, image URL, slug
-export const projectsQuery = groq/* groq */ `
+export const projectsQuery = groq`
   *[_type == "project"] | order(title asc) {
     "slug": slug.current,
     title,
@@ -10,8 +10,7 @@ export const projectsQuery = groq/* groq */ `
   }
 `
 
-// Single project by slug
-export const projectBySlugQuery = groq/* groq */ `
+export const projectBySlugQuery = groq`
   *[_type == "project" && slug.current == $slug][0]{
     "slug": slug.current,
     title,
