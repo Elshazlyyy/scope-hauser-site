@@ -6,7 +6,6 @@ export const projectsQuery = groq`
     "slug": slug.current,
     title,
     location,
-    category,
     "imageUrl": image.asset->url
   }
 `
@@ -16,7 +15,6 @@ export const projectBySlugQuery = groq`
     "slug": slug.current,
     title,
     location,
-    category,
     "imageUrl": image.asset->url
   }
 `
