@@ -23,6 +23,7 @@ const PROJECTS_QUERY = groq/* groq */ `
   "slug": slug.current,
   title,
   location,
+  category,
   "imageUrl": image.asset->url
 }
 `;
@@ -51,6 +52,7 @@ export default function ProjectsPage() {
           slug?: string | null;
           title: string;
           location?: string | null;
+          category?: string | null;
           imageUrl?: string | null;
         }>>(PROJECTS_QUERY);
 
@@ -70,7 +72,7 @@ export default function ProjectsPage() {
               slug: safeSlug,
               title: r.title,
               location: r.location ?? '',
-              category: 'Project',
+              category: r.category ?? 'Uncategorized',
               thumbnail: r.imageUrl ?? '',
               hero: r.imageUrl ?? '',
             };
