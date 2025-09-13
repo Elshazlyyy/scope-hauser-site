@@ -12,13 +12,13 @@ type Project = {
   imageUrl?: string
 }
 
-// SSG: prebuild all slugs
+// Prebuild all slugs
 export async function generateStaticParams() {
   const projects = await client.fetch<Project[]>(projectsQuery)
   return projects.filter(p => p.slug).map(p => ({ slug: p.slug }))
 }
 
-// ISR: revalidate every 10 minutes (optional)
+// Optional ISR
 export const revalidate = 600
 
 export async function generateMetadata(
@@ -71,7 +71,7 @@ export default async function ProjectDetailPage(
           )}
         </figure>
 
-        {/* TODO: replace placeholders with real fields when you add them to the schema */}
+        {/* placeholders until you add fields */}
         <section className="mt-8 space-y-8">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="space-y-3">
