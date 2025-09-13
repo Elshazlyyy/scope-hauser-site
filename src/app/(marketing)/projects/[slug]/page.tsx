@@ -1,4 +1,3 @@
-// src/app/(marketing)/projects/[slug]/page.tsx
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
@@ -12,23 +11,18 @@ type Project = {
   imageUrl?: string
 }
 
-// Prebuild all slugs
 export async function generateStaticParams() {
   const projects = await client.fetch<Project[]>(projectsQuery)
   return projects.filter(p => p.slug).map(p => ({ slug: p.slug }))
 }
 
-// Optional ISR
 export const revalidate = 600
 
 export async function generateMetadata(
   { params }: { params: { slug: string } }
 ): Promise<Metadata> {
   const p = await client.fetch<Project | null>(projectBySlugQuery, { slug: params.slug })
-
-  const DEFAULT_DESC =
-    'Discover real estate investment opportunities and find your perfect place in the UAE.'
-
+  const DEFAULT_DESC = 'Discover real estate investment opportunities and find your perfect place in the UAE.'
   return {
     title: p ? `${p.title} – Scope Hauser` : 'Project Details – Scope Hauser',
     description: p ? `${p.title}${p.location ? ` in ${p.location}` : ''}. ${DEFAULT_DESC}` : DEFAULT_DESC,
@@ -71,7 +65,7 @@ export default async function ProjectDetailPage(
           )}
         </figure>
 
-        {/* placeholders until you add fields */}
+        {/* placeholders */}
         <section className="mt-8 space-y-8">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="space-y-3">
