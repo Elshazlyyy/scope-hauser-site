@@ -2,6 +2,8 @@
 import Image from 'next/image';
 import ProjectsCarousel from '@/components/ProjectsCarousel';
 
+const ABOUT_IMAGE = '/images/About.png'; // <-- one image for all three slices
+
 const STATS = [
   { value: '400+', label: 'Property Ready' },
   { value: '30+', label: 'Years of Experience' },
@@ -52,7 +54,7 @@ const MISSION_TEXT = (
 export default function AboutPage() {
   return (
     <>
-      {/* Intro + stats */}
+      {/* Intro + stats (slice 1: top of the image) */}
       <section className="bg-white">
         <div className="mx-auto max-w-[1720px] px-4 py-4 sm:px-6 lg:px-14 lg:py-6">
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10">
@@ -82,14 +84,15 @@ export default function AboutPage() {
               </dl>
             </div>
 
-            {/* Right image */}
+            {/* Right image slice #1 */}
             <div className="lg:col-span-7 lg:justify-self-end">
               <figure className="relative h-[200px] w-full overflow-hidden sm:h-[240px] lg:h-[300px] lg:w-[747px]">
                 <Image
-                  src="/images/media-city.jpg"
-                  alt="Resort pool and skyline"
+                  src={ABOUT_IMAGE}
+                  alt="About hero"
                   fill
                   className="object-cover"
+                  style={{ objectPosition: 'center 15%' }} // top slice
                   sizes="(max-width: 1024px) 100vw, 747px"
                   priority
                 />
@@ -99,7 +102,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Our Vision */}
+      {/* Our Vision (slice 2: middle of the image) */}
       <section className="bg-white">
         <div className="mx-auto max-w-[1720px] px-4 py-4 sm:px-6 lg:px-14 lg:py-6">
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10">
@@ -112,13 +115,15 @@ export default function AboutPage() {
               </p>
             </div>
 
+            {/* Image slice #2 */}
             <div className="lg:col-span-7 lg:justify-self-end">
               <figure className="relative h-[200px] w-full overflow-hidden sm:h-[240px] lg:h-[300px] lg:w-[747px]">
                 <Image
-                  src="/images/jlt.jpg"
-                  alt="City skyline"
+                  src={ABOUT_IMAGE}
+                  alt="About hero"
                   fill
                   className="object-cover"
+                  style={{ objectPosition: 'center 50%' }} // middle slice
                   sizes="(max-width: 1024px) 100vw, 747px"
                 />
               </figure>
@@ -127,7 +132,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Our Mission */}
+      {/* Our Mission (slice 3: bottom of the image) */}
       <section className="bg-white">
         <div className="mx-auto max-w-[1720px] px-4 py-4 sm:px-6 lg:px-14 lg:py-6">
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10">
@@ -140,13 +145,15 @@ export default function AboutPage() {
               </p>
             </div>
 
+            {/* Image slice #3 */}
             <div className="lg:col-span-7 lg:justify-self-end">
               <figure className="relative h-[200px] w-full overflow-hidden sm:h-[240px] lg:h-[300px] lg:w-[747px]">
                 <Image
-                  src="/images/studio-city.jpg"
-                  alt="Waterfront architecture"
+                  src={ABOUT_IMAGE}
+                  alt="About hero"
                   fill
                   className="object-cover"
+                  style={{ objectPosition: 'center 85%' }} // bottom slice
                   sizes="(max-width: 1024px) 100vw, 747px"
                 />
               </figure>
