@@ -1,8 +1,7 @@
 // src/app/(marketing)/about/page.tsx
-import Image from 'next/image';
 import ProjectsCarousel from '@/components/ProjectsCarousel';
 
-const ABOUT_IMAGE = '/images/About.png'; // <-- one image for all three slices
+const ABOUT_IMAGE = '/images/About.png'; // one image for all three slices
 
 const STATS = [
   { value: '400+', label: 'Property Ready' },
@@ -86,17 +85,15 @@ export default function AboutPage() {
 
             {/* Right image slice #1 */}
             <div className="lg:col-span-7 lg:justify-self-end">
-              <figure className="relative h-[200px] w-full overflow-hidden sm:h-[240px] lg:h-[300px] lg:w-[747px]">
-                <Image
-                  src={ABOUT_IMAGE}
-                  alt="About hero"
-                  fill
-                  className="object-cover"
-                  style={{ objectPosition: 'center 15%' }} // top slice
-                  sizes="(max-width: 1024px) 100vw, 747px"
-                  priority
-                />
-              </figure>
+              <div
+                role="img"
+                aria-label="About hero top slice"
+                className="relative h-[200px] w-full overflow-hidden bg-cover bg-no-repeat sm:h-[240px] lg:h-[300px] lg:w-[747px]"
+                style={{
+                  backgroundImage: `url(${ABOUT_IMAGE})`,
+                  backgroundPosition: 'center 12%',
+                }}
+              />
             </div>
           </div>
         </div>
@@ -117,16 +114,15 @@ export default function AboutPage() {
 
             {/* Image slice #2 */}
             <div className="lg:col-span-7 lg:justify-self-end">
-              <figure className="relative h-[200px] w-full overflow-hidden sm:h-[240px] lg:h-[300px] lg:w-[747px]">
-                <Image
-                  src={ABOUT_IMAGE}
-                  alt="About hero"
-                  fill
-                  className="object-cover"
-                  style={{ objectPosition: 'center 50%' }} // middle slice
-                  sizes="(max-width: 1024px) 100vw, 747px"
-                />
-              </figure>
+              <div
+                role="img"
+                aria-label="About hero middle slice"
+                className="relative h-[200px] w-full overflow-hidden bg-cover bg-no-repeat sm:h-[240px] lg:h-[300px] lg:w-[747px]"
+                style={{
+                  backgroundImage: `url(${ABOUT_IMAGE})`,
+                  backgroundPosition: 'center 50%',
+                }}
+              />
             </div>
           </div>
         </div>
@@ -147,16 +143,15 @@ export default function AboutPage() {
 
             {/* Image slice #3 */}
             <div className="lg:col-span-7 lg:justify-self-end">
-              <figure className="relative h-[200px] w-full overflow-hidden sm:h-[240px] lg:h-[300px] lg:w-[747px]">
-                <Image
-                  src={ABOUT_IMAGE}
-                  alt="About hero"
-                  fill
-                  className="object-cover"
-                  style={{ objectPosition: 'center 85%' }} // bottom slice
-                  sizes="(max-width: 1024px) 100vw, 747px"
-                />
-              </figure>
+              <div
+                role="img"
+                aria-label="About hero bottom slice"
+                className="relative h-[200px] w-full overflow-hidden bg-cover bg-no-repeat sm:h-[240px] lg:h-[300px] lg:w-[747px]"
+                style={{
+                  backgroundImage: `url(${ABOUT_IMAGE})`,
+                  backgroundPosition: 'center 88%',
+                }}
+              />
             </div>
           </div>
         </div>
