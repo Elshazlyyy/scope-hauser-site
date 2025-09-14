@@ -53,11 +53,10 @@ const MISSION_TEXT = (
 export default function AboutPage() {
   return (
     <>
-      {/* Intro + stats (slice 1: top of the image) */}
+      {/* Intro + stats (slice 1: zoom on sky/top) */}
       <section className="bg-white">
         <div className="mx-auto max-w-[1720px] px-4 py-4 sm:px-6 lg:px-14 lg:py-6">
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10">
-            {/* Left copy */}
             <div className="lg:col-span-5">
               <h1 className="text-[22px] font-semibold text-neutral-900 sm:text-3xl md:text-4xl">
                 Bring your Family
@@ -83,15 +82,16 @@ export default function AboutPage() {
               </dl>
             </div>
 
-            {/* Right image slice #1 (sky/top) */}
+            {/* Slice #1 */}
             <div className="lg:col-span-7 lg:justify-self-end">
               <div
                 role="img"
                 aria-label="About hero top slice"
-                className="relative h-[200px] w-full overflow-hidden bg-cover bg-no-repeat sm:h-[240px] lg:h-[300px] lg:w-[747px]"
+                className="relative h-[200px] w-full overflow-hidden bg-no-repeat sm:h-[240px] lg:h-[300px] lg:w-[747px]"
                 style={{
                   backgroundImage: `url(${ABOUT_IMAGE})`,
-                  backgroundPosition: 'center 10%', // sky
+                  backgroundSize: '170% auto', // slight zoom
+                  backgroundPosition: 'center 0%', // zoom on sky/top
                 }}
               />
             </div>
@@ -99,7 +99,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Our Vision (slice 2: middle skyline + dome) */}
+      {/* Our Vision (slice 2: zoom on middle/dome) */}
       <section className="bg-white">
         <div className="mx-auto max-w-[1720px] px-4 py-4 sm:px-6 lg:px-14 lg:py-6">
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10">
@@ -112,15 +112,16 @@ export default function AboutPage() {
               </p>
             </div>
 
-            {/* Image slice #2 */}
+            {/* Slice #2 — zoomed, focused on lower part */}
             <div className="lg:col-span-7 lg:justify-self-end">
               <div
                 role="img"
                 aria-label="About hero middle slice"
-                className="relative h-[200px] w-full overflow-hidden bg-cover bg-no-repeat sm:h-[240px] lg:h-[300px] lg:w-[747px]"
+                className="relative h-[200px] w-full overflow-hidden bg-no-repeat sm:h-[240px] lg:h-[300px] lg:w-[747px]"
                 style={{
                   backgroundImage: `url(${ABOUT_IMAGE})`,
-                  backgroundPosition: 'center 55%', // skyline & dome
+                  backgroundSize: '140% auto', // stronger zoom
+                  backgroundPosition: 'center 45%', // push focus lower (70–85% range)
                 }}
               />
             </div>
@@ -128,7 +129,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Our Mission (slice 3: water/bottom) */}
+      {/* Our Mission (slice 3: zoom on water/bottom) */}
       <section className="bg-white">
         <div className="mx-auto max-w-[1720px] px-4 py-4 sm:px-6 lg:px-14 lg:py-6">
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10">
@@ -141,15 +142,16 @@ export default function AboutPage() {
               </p>
             </div>
 
-            {/* Image slice #3 */}
+            {/* Slice #3 */}
             <div className="lg:col-span-7 lg:justify-self-end">
               <div
                 role="img"
                 aria-label="About hero bottom slice"
-                className="relative h-[200px] w-full overflow-hidden bg-cover bg-no-repeat sm:h-[240px] lg:h-[300px] lg:w-[747px]"
+                className="relative h-[200px] w-full overflow-hidden bg-no-repeat sm:h-[240px] lg:h-[300px] lg:w-[747px]"
                 style={{
                   backgroundImage: `url(${ABOUT_IMAGE})`,
-                  backgroundPosition: 'center 92%', // water/bottom
+                  backgroundSize: '150% auto',
+                  backgroundPosition: 'center 100%', // zoom on bottom
                 }}
               />
             </div>
