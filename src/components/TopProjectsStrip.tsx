@@ -16,24 +16,24 @@ export default function TopProjectsStrip() {
         <header className="mb-8 lg:mb-12">
           <h2 className="leading-tight tracking-normal text-neutral-900">
             {/* Line 1 */}
-            <span className="block text-[22px] font-normal sm:text-[26px] md:text-[30px] lg:text-[42px] xl:text-[46px]">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry.
+            <span className="block text-[22px] font-semibold text-[#2B3119] sm:text-[26px] md:text-[30px] lg:text-[42px] xl:text-[46px]">
+              Founded in 1995,
+              <span className="font-normal text-neutral-900">
+                {' '}
+                reimagined for today.
+              </span>
             </span>
 
             {/* Line 2 */}
-            <span className="block text-[22px] font-semibold text-neutral-500 sm:text-[26px] md:text-[30px] lg:text-[42px] xl:text-[46px]">
-              Lorem Ipsum has been the industry&apos;s standard dummy
-              <span className="font-normal text-neutral-900">
-                {' '}
-                text ever since the
-              </span>
+            <span className="block text-[22px] font-normal text-neutral-900 sm:text-[26px] md:text-[30px] lg:text-[42px] xl:text-[46px]">
+              With decades of expertise, we deliver measured decisions and
+              lasting value.
             </span>
 
             {/* Line 3 */}
             <span className="block text-[22px] font-normal text-neutral-900 sm:text-[26px] md:text-[30px] lg:text-[42px] xl:text-[46px]">
-              1500s, when an unknown printer took a galley of type and scrambled
-              it to make a
+              Real estate made simple — property made easy, solutions made
+              clear.
             </span>
           </h2>
         </header>
