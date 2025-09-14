@@ -17,17 +17,13 @@ export default function TopProjectsStrip() {
           <h2 className="leading-tight tracking-normal text-neutral-900">
             {/* Line 1 */}
             <span className="block text-[22px] font-semibold text-[#2B3119] sm:text-[26px] md:text-[30px] lg:text-[42px] xl:text-[46px]">
-              Founded in 1995,
-              <span className="font-normal text-neutral-900">
-                {' '}
-                reimagined for today.
-              </span>
+              Founded in 1995, reimagined for today. With decades of expertise,
+              we deliver
             </span>
 
             {/* Line 2 */}
             <span className="block text-[22px] font-normal text-neutral-900 sm:text-[26px] md:text-[30px] lg:text-[42px] xl:text-[46px]">
-              With decades of expertise, we deliver measured decisions and
-              lasting value.
+              measured decisions and lasting value.
             </span>
 
             {/* Line 3 */}

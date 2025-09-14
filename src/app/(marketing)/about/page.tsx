@@ -10,24 +10,44 @@ const STATS = [
 
 const INTRO_TEXT = (
   <>
-    Discover real estate investment <br />
-    opportunities and find your
+    Welcome to Scope Hauser Founded in 1995 and reimagined for today, <br />
+    Scope Hauser brings nearly three decades of expertise to every client <br />
+    relationship. Our focus is simple: measured decisions that deliver lasting{' '}
+    <br />
+    value. Whether you’re buying, selling, or investing, we make real estate{' '}
+    <br />
+    straightforward — property made easy, solutions made clear.
   </>
 );
 
 const VISION_TEXT = (
   <>
-    Discover real estate investment opportunities and find your Discover real
-    estate investment opportunities and find your <br />
-    Discover real estate investment opportunities and find your Discover real
-    estate investment opportunities and find your Discover real estate
-    investment opportunities and find your Discover real &nbsp; Discover real
-    estate investment opportunities and find your Discover real estate
-    investment opportunities and find your <br />
+    Our vision is to be the most trusted and forward-thinking real estate <br />
+    partner in the region. <br />
+    We aim to redefine property experiences through innovation, <br />
+    professionalism, and decades of expertise — making ownership <br />
+    accessible and stress-free. <br />
+    <br />
+    By evolving with the market while staying true to our values, we aspire to{' '}
+    <br />
+    create a future where real estate is seamless, clear, and fulfilling for
+    all.
   </>
 );
 
-const MISSION_TEXT = VISION_TEXT;
+const MISSION_TEXT = (
+  <>
+    At Scope Hauser, our mission is to simplify real estate and deliver <br />
+    lasting value. <br />
+    Since 1995, we’ve guided clients with clarity, transparency, and trust{' '}
+    <br />
+    — making every step, from buying to investing, straightforward and <br />
+    rewarding. <br />
+    <br />
+    We are committed to building relationships based on integrity and <br />
+    expertise, turning complex property decisions into confident choices.
+  </>
+);
 
 export default function AboutPage() {
   return (
@@ -87,7 +107,7 @@ export default function AboutPage() {
               <h2 className="text-[20px] font-semibold text-neutral-900 sm:text-2xl md:text-3xl">
                 Our Vision
               </h2>
-              <p className="mt-3 leading-relaxed text-[14px] text-neutral-600 sm:text-[15px]">
+              <p className="mt-3 text-[14px] leading-relaxed text-neutral-600 sm:text-[15px]">
                 {VISION_TEXT}
               </p>
             </div>
@@ -115,7 +135,7 @@ export default function AboutPage() {
               <h2 className="text-[20px] font-semibold text-neutral-900 sm:text-2xl md:text-3xl">
                 Our Mission
               </h2>
-              <p className="mt-3 leading-relaxed text-[14px] text-neutral-600 sm:text-[15px]">
+              <p className="mt-3 text-[14px] leading-relaxed text-neutral-600 sm:text-[15px]">
                 {MISSION_TEXT}
               </p>
             </div>
