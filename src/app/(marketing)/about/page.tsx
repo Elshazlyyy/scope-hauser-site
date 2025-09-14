@@ -1,7 +1,7 @@
 // src/app/(marketing)/about/page.tsx
 import ProjectsCarousel from '@/components/ProjectsCarousel';
 
-const ABOUT_IMAGE = '/images/About.png'; // one image for all three slices
+const ABOUT_IMAGE = '/images/About.png'; // one image used for all three slices
 
 const STATS = [
   { value: '400+', label: 'Property Ready' },
@@ -83,7 +83,7 @@ export default function AboutPage() {
               </dl>
             </div>
 
-            {/* Right image slice #1 */}
+            {/* Right image slice #1 (sky/top) */}
             <div className="lg:col-span-7 lg:justify-self-end">
               <div
                 role="img"
@@ -91,7 +91,7 @@ export default function AboutPage() {
                 className="relative h-[200px] w-full overflow-hidden bg-cover bg-no-repeat sm:h-[240px] lg:h-[300px] lg:w-[747px]"
                 style={{
                   backgroundImage: `url(${ABOUT_IMAGE})`,
-                  backgroundPosition: 'center 12%',
+                  backgroundPosition: 'center 10%', // sky
                 }}
               />
             </div>
@@ -99,7 +99,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Our Vision (slice 2: middle of the image) */}
+      {/* Our Vision (slice 2: middle skyline + dome) */}
       <section className="bg-white">
         <div className="mx-auto max-w-[1720px] px-4 py-4 sm:px-6 lg:px-14 lg:py-6">
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10">
@@ -120,7 +120,7 @@ export default function AboutPage() {
                 className="relative h-[200px] w-full overflow-hidden bg-cover bg-no-repeat sm:h-[240px] lg:h-[300px] lg:w-[747px]"
                 style={{
                   backgroundImage: `url(${ABOUT_IMAGE})`,
-                  backgroundPosition: 'center 50%',
+                  backgroundPosition: 'center 55%', // skyline & dome
                 }}
               />
             </div>
@@ -128,7 +128,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Our Mission (slice 3: bottom of the image) */}
+      {/* Our Mission (slice 3: water/bottom) */}
       <section className="bg-white">
         <div className="mx-auto max-w-[1720px] px-4 py-4 sm:px-6 lg:px-14 lg:py-6">
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10">
@@ -149,7 +149,7 @@ export default function AboutPage() {
                 className="relative h-[200px] w-full overflow-hidden bg-cover bg-no-repeat sm:h-[240px] lg:h-[300px] lg:w-[747px]"
                 style={{
                   backgroundImage: `url(${ABOUT_IMAGE})`,
-                  backgroundPosition: 'center 88%',
+                  backgroundPosition: 'center 92%', // water/bottom
                 }}
               />
             </div>
