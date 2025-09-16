@@ -18,7 +18,7 @@ type Project = {
 };
 
 // ✅ If schema has only a single `image` field, resolve that directly
-const PROJECTS_QUERY = groq/* groq */ `
+const PROJECTS_QUERY = groq /* groq */ `
 *[_type == "project"] | order(title asc) {
   "slug": slug.current,
   title,
@@ -33,8 +33,8 @@ const toSlug = (t: string) =>
     t
       .toLowerCase()
       .trim()
-      .replace(/\s+/g, '-')      // spaces -> dashes
-      .replace(/[^a-z0-9\-]/g, '') // strip non-url-safe (except dash)
+      .replace(/\s+/g, '-') // spaces -> dashes
+      .replace(/[^a-z0-9\-]/g, ''), // strip non-url-safe (except dash)
   );
 
 export default function ProjectsPage() {
@@ -47,24 +47,33 @@ export default function ProjectsPage() {
     let mounted = true;
     (async () => {
       try {
-        const raw = await client.fetch<Array<{
-          slug?: string | null;
-          title: string;
-          location?: string | null;
-          imageUrl?: string | null;
-        }>>(PROJECTS_QUERY);
+        const raw = await client.fetch<
+          Array<{
+            slug?: string | null;
+            title: string;
+            location?: string | null;
+            imageUrl?: string | null;
+          }>
+        >(PROJECTS_QUERY);
 
         if (!mounted) return;
 
         if (!raw?.length) {
-          console.warn('[projects] Sanity returned 0 rows. Check: published docs, dataset, CORS, privacy.');
+          console.warn(
+            '[projects] Sanity returned 0 rows. Check: published docs, dataset, CORS, privacy.',
+          );
         } else {
-          console.log('[projects] fetched', raw.length, 'rows. Example:', raw[0]);
+          console.log(
+            '[projects] fetched',
+            raw.length,
+            'rows. Example:',
+            raw[0],
+          );
         }
 
         const mapped: Project[] = (raw || [])
-          .filter(r => !!r?.title)
-          .map(r => {
+          .filter((r) => !!r?.title)
+          .map((r) => {
             const safeSlug = r.slug && r.slug.length ? r.slug : toSlug(r.title);
             return {
               slug: safeSlug,
@@ -81,17 +90,22 @@ export default function ProjectsPage() {
         console.error('Failed to fetch projects from Sanity', err);
       }
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const categories = useMemo<Project['category'][]>(
-    () => Array.from(new Set(projects.map(p => p.category))) as Project['category'][],
-    [projects]
+    () =>
+      Array.from(
+        new Set(projects.map((p) => p.category)),
+      ) as Project['category'][],
+    [projects],
   );
 
   const locations = useMemo<string[]>(
-    () => Array.from(new Set(projects.map(p => p.location).filter(Boolean))),
-    [projects]
+    () => Array.from(new Set(projects.map((p) => p.location).filter(Boolean))),
+    [projects],
   );
 
   const filtered = useMemo<Project[]>(() => {
@@ -101,7 +115,10 @@ export default function ProjectsPage() {
       const byQ =
         q.trim() === ''
           ? true
-          : [p.title, p.location, p.category].join(' ').toLowerCase().includes(q.toLowerCase());
+          : [p.title, p.location, p.category]
+              .join(' ')
+              .toLowerCase()
+              .includes(q.toLowerCase());
       return byCat && byLoc && byQ;
     });
   }, [projects, category, location, q]);
@@ -109,7 +126,9 @@ export default function ProjectsPage() {
   return (
     <main className="min-h-screen bg-white">
       <div className="mx-auto w-full max-w-[1720px] px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
-        <h1 className="text-[28px] font-semibold text-neutral-900 sm:text-[36px]">Our Projects</h1>
+        <h1 className="text-[28px] font-semibold text-neutral-900 sm:text-[36px]">
+          Our Projects
+        </h1>
 
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
           <div className="relative">
@@ -126,14 +145,18 @@ export default function ProjectsPage() {
             <div className="relative w-1/2">
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value as 'All' | Project['category'])}
+                onChange={(e) =>
+                  setCategory(e.target.value as 'All' | Project['category'])
+                }
                 className="h-11 w-full appearance-none rounded-lg border border-black/10 bg-white pr-9 pl-3 text-sm text-neutral-800 outline-none focus:ring-2 focus:ring-black/10"
                 aria-label="Project category"
               >
                 {/* ✅ Fix label for the 'All' option */}
                 <option value="All">All</option>
                 {categories.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
                 ))}
               </select>
               <ChevronRight className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 rotate-90 text-neutral-500" />
@@ -148,7 +171,9 @@ export default function ProjectsPage() {
               >
                 <option value="All">Location</option>
                 {locations.map((loc) => (
-                  <option key={loc} value={loc}>{loc}</option>
+                  <option key={loc} value={loc}>
+                    {loc}
+                  </option>
                 ))}
               </select>
               <ChevronRight className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 rotate-90 text-neutral-500" />
@@ -157,7 +182,9 @@ export default function ProjectsPage() {
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((p, idx) => (<Card key={p.slug} p={p} priority={idx < 3} />))}
+          {filtered.map((p, idx) => (
+            <Card key={p.slug} p={p} priority={idx < 3} />
+          ))}
         </div>
       </div>
     </main>
@@ -169,7 +196,11 @@ function Card({ p, priority }: { p: Project; priority?: boolean }) {
 
   return (
     <article className="group relative overflow-hidden border border-black/10 bg-white shadow-[0_6px_30px_rgba(0,0,0,0.08)]">
-      <Link href={`/projects/${encodeURIComponent(p.slug)}`} aria-label={`View details for ${p.title}`} className="absolute inset-0 z-10" />
+      <Link
+        href={`/projects/${encodeURIComponent(p.slug)}`}
+        aria-label={`View details for ${p.title}`}
+        className="absolute inset-0 z-10"
+      />
       <figure className="relative aspect-[4/3] w-full">
         {src ? (
           <Image
@@ -186,11 +217,16 @@ function Card({ p, priority }: { p: Project; priority?: boolean }) {
           <div className="h-full w-full bg-neutral-100" />
         )}
       </figure>
-      <div className="p-6">
-        <h3 className="text-[28px] leading-snug font-semibold text-[#2B3119] sm:text-[32px]">{p.title}</h3>
-        <div className="mt-3 inline-flex items-center gap-1 text-[16px] text-neutral-700 sm:text-[18px]">
-          <Pin className="h-[26px] w-[26px] flex-shrink-0" />
-          <span className="relative top-[2px]">{p.location}</span>
+      <div className="p-4 sm:p-5">
+        <h3 className="text-[16px] font-semibold text-[#2B3119] sm:text-[18px]">
+          {p.title}
+        </h3>
+
+        <div className="mt-1.5 flex items-center gap-1.5 text-[13px] text-neutral-600 sm:mt-2 sm:gap-2 sm:text-[14px]">
+          <Pin className="h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5" />
+          <span className="relative top-[0.5px] sm:top-[1px]">
+            {p.location}
+          </span>
         </div>
       </div>
     </article>
