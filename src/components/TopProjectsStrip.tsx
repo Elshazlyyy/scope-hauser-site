@@ -16,18 +16,18 @@ export default function TopProjectsStrip() {
         <header className="mb-8 lg:mb-12">
           <h2 className="leading-tight tracking-normal text-neutral-900">
             {/* Line 1 */}
-            <span className="block text-[22px] font-semibold text-[#2B3119] sm:text-[26px] md:text-[30px] lg:text-[42px] xl:text-[46px]">
+            <span className="block text-[18px] font-semibold text-[#2B3119] sm:text-[26px] md:text-[30px] lg:text-[42px] xl:text-[46px]">
               Founded in 1995, reimagined for today. With decades of expertise,
               we deliver
             </span>
 
             {/* Line 2 */}
-            <span className="block text-[22px] font-normal text-neutral-900 sm:text-[26px] md:text-[30px] lg:text-[42px] xl:text-[46px]">
+            <span className="block text-[18px] font-normal text-neutral-900 sm:text-[26px] md:text-[30px] lg:text-[42px] xl:text-[46px]">
               measured decisions and lasting value.
             </span>
 
             {/* Line 3 */}
-            <span className="block text-[22px] font-normal text-neutral-900 sm:text-[26px] md:text-[30px] lg:text-[42px] xl:text-[46px]">
+            <span className="block text-[18px] font-normal text-neutral-900 sm:text-[26px] md:text-[30px] lg:text-[42px] xl:text-[46px]">
               Real estate made simple — property made easy, solutions made
               clear.
             </span>
