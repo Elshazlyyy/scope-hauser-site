@@ -10,24 +10,29 @@ import { groq } from 'next-sanity';
 
 type Project = {
   slug: string;
-  title: string;
+  projectName: string;
   location: string;
   category: string;
   thumbnail: string;
   hero?: string;
 };
 
-// ✅ If schema has only a single `image` field, resolve that directly
-const PROJECTS_QUERY = groq /* groq */ `
-*[_type == "project"] | order(title asc) {
+// ✅ Query aligned to new schema
+const PROJECTS_QUERY = groq`
+*[_type == "project"] | order(projectName asc) {
   "slug": slug.current,
-  title,
+  projectName,
   location,
-  "imageUrl": image.asset->url
+  "imageUrl": coalesce(
+    image1.asset->url,
+    image2.asset->url,
+    image3.asset->url,
+    image4.asset->url,
+    image5.asset->url
+  )
 }
 `;
 
-// Simple JS fallback for slug if missing
 const toSlug = (t: string) =>
   encodeURIComponent(
     t
@@ -50,7 +55,7 @@ export default function ProjectsPage() {
         const raw = await client.fetch<
           Array<{
             slug?: string | null;
-            title: string;
+            projectName: string;
             location?: string | null;
             imageUrl?: string | null;
           }>
@@ -59,25 +64,17 @@ export default function ProjectsPage() {
         if (!mounted) return;
 
         if (!raw?.length) {
-          console.warn(
-            '[projects] Sanity returned 0 rows. Check: published docs, dataset, CORS, privacy.',
-          );
-        } else {
-          console.log(
-            '[projects] fetched',
-            raw.length,
-            'rows. Example:',
-            raw[0],
-          );
+          console.warn('[projects] Sanity returned 0 rows.');
         }
 
         const mapped: Project[] = (raw || [])
-          .filter((r) => !!r?.title)
+          .filter((r) => !!r?.projectName)
           .map((r) => {
-            const safeSlug = r.slug && r.slug.length ? r.slug : toSlug(r.title);
+            const safeSlug =
+              r.slug && r.slug.length ? r.slug : toSlug(r.projectName);
             return {
               slug: safeSlug,
-              title: r.title,
+              projectName: r.projectName,
               location: r.location ?? '',
               category: 'Project',
               thumbnail: r.imageUrl ?? '',
@@ -104,7 +101,14 @@ export default function ProjectsPage() {
   );
 
   const locations = useMemo<string[]>(
-    () => Array.from(new Set(projects.map((p) => p.location).filter(Boolean))),
+    () =>
+      Array.from(
+        new Set(
+          projects
+            .map((p) => p.location)
+            .filter((loc): loc is string => Boolean(loc)),
+        ),
+      ),
     [projects],
   );
 
@@ -115,7 +119,7 @@ export default function ProjectsPage() {
       const byQ =
         q.trim() === ''
           ? true
-          : [p.title, p.location, p.category]
+          : [p.projectName, p.location, p.category]
               .join(' ')
               .toLowerCase()
               .includes(q.toLowerCase());
@@ -130,6 +134,7 @@ export default function ProjectsPage() {
           Our Projects
         </h1>
 
+        {/* Search + Filters */}
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
           <div className="relative">
             <input
@@ -142,6 +147,7 @@ export default function ProjectsPage() {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Category dropdown */}
             <div className="relative w-1/2">
               <select
                 value={category}
@@ -151,7 +157,6 @@ export default function ProjectsPage() {
                 className="h-11 w-full appearance-none rounded-lg border border-black/10 bg-white pr-9 pl-3 text-sm text-neutral-800 outline-none focus:ring-2 focus:ring-black/10"
                 aria-label="Project category"
               >
-                {/* ✅ Fix label for the 'All' option */}
                 <option value="All">All</option>
                 {categories.map((c) => (
                   <option key={c} value={c}>
@@ -162,6 +167,7 @@ export default function ProjectsPage() {
               <ChevronRight className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 rotate-90 text-neutral-500" />
             </div>
 
+            {/* Location dropdown */}
             <div className="relative w-1/2">
               <select
                 value={location}
@@ -181,6 +187,7 @@ export default function ProjectsPage() {
           </div>
         </div>
 
+        {/* Results */}
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
           {filtered.map((p, idx) => (
             <Card key={p.slug} p={p} priority={idx < 3} />
@@ -198,18 +205,17 @@ function Card({ p, priority }: { p: Project; priority?: boolean }) {
     <article className="group relative overflow-hidden border border-black/10 bg-white shadow-[0_6px_30px_rgba(0,0,0,0.08)]">
       <Link
         href={`/projects/${encodeURIComponent(p.slug)}`}
-        aria-label={`View details for ${p.title}`}
+        aria-label={`View details for ${p.projectName}`}
         className="absolute inset-0 z-10"
       />
       <figure className="relative aspect-[4/3] w-full">
         {src ? (
           <Image
             src={src}
-            alt={p.title}
+            alt={p.projectName}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             sizes="(min-width:1280px) 33vw, (min-width:768px) 50vw, 100vw"
-            // ✅ Only prioritize the first few images for performance
             priority={!!priority}
             unoptimized
           />
@@ -219,7 +225,7 @@ function Card({ p, priority }: { p: Project; priority?: boolean }) {
       </figure>
       <div className="p-4 sm:p-5">
         <h3 className="text-[16px] font-semibold text-[#2B3119] sm:text-[18px]">
-          {p.title}
+          {p.projectName}
         </h3>
 
         <div className="mt-1.5 flex items-center gap-1.5 text-[13px] text-neutral-600 sm:mt-2 sm:gap-2 sm:text-[14px]">

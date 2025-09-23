@@ -11,7 +11,7 @@ export default function ProjectCard({ project }: { project: Project }) {
         {src ? (
           <Image
             src={src}
-            alt={project.title}
+            alt={project.projectName}
             fill
             className="object-cover"
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
@@ -26,7 +26,7 @@ export default function ProjectCard({ project }: { project: Project }) {
         <div className="text-xs tracking-wide text-neutral-500 uppercase">
           {project.location ? `Project · ${project.location}` : 'Project'}
         </div>
-        <h3 className="text-lg font-semibold">{project.title}</h3>
+        <h3 className="text-lg font-semibold">{project.projectName}</h3>
 
         <div className="pt-3">
           <Link

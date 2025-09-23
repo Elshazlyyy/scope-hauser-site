@@ -4,22 +4,17 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { client } from '@/sanity/lib/client'
 import { projectsQuery, projectBySlugQuery } from '@/sanity/queries'
-
-type Project = {
-  slug: string
-  title: string
-  location?: string
-  imageUrl?: string
-}
+import type { Project } from '@/types/project'
 
 export async function generateStaticParams() {
   const projects = await client.fetch<Project[]>(projectsQuery)
-  return projects.filter(p => p.slug).map(p => ({ slug: p.slug }))
+  return projects.filter((p) => p.slug).map((p) => ({ slug: p.slug }))
 }
 
 export const revalidate = 600
 
-// ✅ params is a Promise in your env — await it
+// If your setup passes params as a Promise, keep this signature.
+// If not, change to: ({ params }: { params: { slug: string } })
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
@@ -30,12 +25,14 @@ export async function generateMetadata(
     'Discover real estate investment opportunities and find your perfect place in the UAE.'
 
   return {
-    title: p ? `${p.title} – Scope Hauser` : 'Project Details – Scope Hauser',
-    description: p ? `${p.title}${p.location ? ` in ${p.location}` : ''}. ${DEFAULT_DESC}` : DEFAULT_DESC,
+    title: p ? `${p.projectName} – Scope Hauser` : 'Project Details – Scope Hauser',
+    description: p
+      ? `${p.projectName}${p.location ? ` in ${p.location}` : ''}. ${DEFAULT_DESC}`
+      : DEFAULT_DESC,
   }
 }
 
-// ✅ Same here: accept Promise and await it
+// Same note as above re: params Promise
 export default async function ProjectDetailPage(
   { params }: { params: Promise<{ slug: string }> }
 ) {
@@ -48,7 +45,7 @@ export default async function ProjectDetailPage(
       <div className="mx-auto w-full max-w-[1720px] px-4 pt-8 pb-6 sm:px-6 lg:px-14 lg:pt-12 lg:pb-10">
         <header className="lg:grid lg:grid-cols-12 lg:items-end lg:gap-10">
           <h1 className="text-[22px] font-semibold text-neutral-900 sm:text-[26px] lg:col-span-6 lg:text-[30px]">
-            {p.title}
+            {p.projectName}
           </h1>
           <p className="mt-2 max-w-none text-[13px] leading-snug text-neutral-700 sm:text-[14px] lg:col-span-6 lg:ml-auto lg:mt-0 lg:max-w-[520px] lg:text-right">
             Discover real estate investment opportunities and find
@@ -61,7 +58,7 @@ export default async function ProjectDetailPage(
           {p.imageUrl ? (
             <Image
               src={p.imageUrl}
-              alt={p.title}
+              alt={p.projectName}
               fill
               priority
               className="object-cover"
