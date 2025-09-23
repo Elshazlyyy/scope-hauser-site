@@ -51,7 +51,7 @@ export default function ProjectsCarousel() {
       try {
         const rows = await client.fetch<Project[]>(PROJECTS_QUERY)
         if (!active) return
-        setProjects(rows.filter(p => !!p.slug && !!p.title))
+        setProjects(rows.filter(p => !!p.slug && !!p.projectName))
       } catch (e) {
         console.error('[ProjectsCarousel] fetch failed', e)
       }
