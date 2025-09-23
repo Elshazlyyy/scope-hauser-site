@@ -12,7 +12,7 @@ export default function ProjectCarouselCard({ p }: { p: Project }) {
       <Link
         href={`/projects/${p.slug}`}
         prefetch
-        aria-label={`View details for ${p.projectName}`}
+        aria-label={`View details for ${p.title}`}
         className="absolute inset-0 z-10 rounded-[2px] outline-none"
       />
 
@@ -21,7 +21,7 @@ export default function ProjectCarouselCard({ p }: { p: Project }) {
         {src ? (
           <Image
             src={src}
-            alt={p.projectName}
+            alt={p.title}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-[1.01]"
             sizes="(min-width:1280px) 33vw, (min-width:768px) 50vw, 100vw"
@@ -36,7 +36,7 @@ export default function ProjectCarouselCard({ p }: { p: Project }) {
       {/* Body */}
       <div className="flex-1 p-4 sm:p-5">
         <h3 className="text-[16px] font-semibold text-[#2B3119] sm:text-[18px]">
-          {p.projectName}
+          {p.title}
         </h3>
 
         <div className="mt-1.5 flex items-center gap-1.5 text-[13px] text-neutral-600 sm:mt-2 sm:gap-2 sm:text-[14px]">
