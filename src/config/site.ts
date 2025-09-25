@@ -4,8 +4,8 @@ export const SITE = {
   phone: '+971 56 120 3118',
   address: 'Abu Dhabi, UAE',
   socials: {
-    instagram: 'https://instagram.com/yourhandle',
+    instagram: 'https://www.instagram.com/scopehauser/',
     linkedin: 'https://linkedin.com/company/yourcompany',
-    facebook: 'https://facebook.com/yourpage',
+    facebook: 'https://www.facebook.com/profile.php?id=61580676833794&_rdc=1&_rdr#',
   },
 };
