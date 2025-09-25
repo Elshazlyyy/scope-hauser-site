@@ -5,15 +5,38 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { client } from '@/sanity/lib/client';
 import { projectsQuery, projectBySlugQuery } from '@/sanity/queries';
-import type { Project } from '@/types/project';
+import type { Project, SanityImageRef } from '@/types/project';
+import imageUrlBuilder from '@sanity/image-url';
 
 /**
  * Aligned with src/types/project.d.ts and src/sanity/queries.ts
- * Renders ALL fields from Project:
- * slug, projectName, imageUrl, location, propertyType, bedrooms,
- * developer, startingPriceAED, sizeRangeFt2, description, listingURL,
- * image1..image5 + image1Alt..image5Alt
+ * Renders ALL fields from Project.
+ * Top hero is a scroll-snap carousel built from image1..image5, with fallback to imageUrl.
  */
+
+// --- Sanity image URL helper (no 'any', safe even if env missing) ---
+const SANITY_PROJECT_ID = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+const SANITY_DATASET = process.env.NEXT_PUBLIC_SANITY_DATASET;
+const builder =
+  SANITY_PROJECT_ID && SANITY_DATASET
+    ? imageUrlBuilder({ projectId: SANITY_PROJECT_ID, dataset: SANITY_DATASET })
+    : null;
+
+function urlFor(src?: SanityImageRef) {
+  if (!src || !builder) return undefined;
+  try {
+    return builder
+      .image(src)
+      .width(1920)
+      .height(1080)
+      .fit('crop')
+      .auto('format')
+      .quality(85)
+      .url();
+  } catch {
+    return undefined;
+  }
+}
 
 export async function generateStaticParams() {
   const projects = await client.fetch<Project[]>(projectsQuery);
@@ -122,6 +145,20 @@ export default async function ProjectDetailPage({
   const p = await client.fetch<Project | null>(projectBySlugQuery, { slug });
   if (!p) return notFound();
 
+  // Slides with proper alt pairing, filtered for available URLs
+  const rawSlides: Array<{ ref?: SanityImageRef; alt: string }> = [
+    { ref: p.image1, alt: p.image1Alt || 'Image 1' },
+    { ref: p.image2, alt: p.image2Alt || 'Image 2' },
+    { ref: p.image3, alt: p.image3Alt || 'Image 3' },
+    { ref: p.image4, alt: p.image4Alt || 'Image 4' },
+    { ref: p.image5, alt: p.image5Alt || 'Image 5' },
+  ];
+  const slides: Array<{ url: string; alt: string }> = rawSlides
+    .map((s) => ({ url: urlFor(s.ref), alt: s.alt }))
+    .filter((s): s is { url: string; alt: string } => Boolean(s.url));
+  if (slides.length === 0 && p.imageUrl)
+    slides.push({ url: p.imageUrl, alt: p.projectName });
+
   return (
     <main className="bg-white">
       <div className="mx-auto w-full max-w-[1720px] px-4 pt-8 pb-10 sm:px-6 lg:px-14 lg:pt-12">
@@ -150,24 +187,43 @@ export default async function ProjectDetailPage({
           </div>
         </header>
 
-        {/* Hero */}
-        <figure className="relative mt-5 h-[232px] w-full overflow-hidden rounded-2xl sm:h-[320px] lg:mt-7 lg:aspect-[21/9] lg:h-auto">
-          {p.imageUrl ? (
-            <Image
-              src={p.imageUrl}
-              alt={p.projectName}
-              fill
-              priority
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 1400px"
-              unoptimized
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center rounded-2xl bg-neutral-100 text-neutral-400">
-              No image available
+        {/* Hero → Carousel */}
+        <section className="relative mt-5 lg:mt-7">
+          <div className="relative overflow-hidden rounded-2xl">
+            <div className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth">
+              {slides.map((s, idx) => (
+                <div
+                  key={idx}
+                  className="relative h-[232px] w-full flex-shrink-0 snap-center sm:h-[320px] lg:aspect-[21/9] lg:h-auto"
+                >
+                  <Image
+                    src={s.url}
+                    alt={s.alt}
+                    fill
+                    priority={idx === 0}
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 1400px"
+                    unoptimized
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Dots (visual only) */}
+          {slides.length > 1 && (
+            <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/40 px-2 py-1">
+              <div className="pointer-events-auto flex items-center gap-1">
+                {slides.map((_, i) => (
+                  <span
+                    key={i}
+                    className="h-1.5 w-1.5 rounded-full bg-white/70"
+                  />
+                ))}
+              </div>
             </div>
           )}
-        </figure>
+        </section>
 
         {/* Content Sections */}
         <div className="mt-8 space-y-10">
@@ -253,16 +309,8 @@ export default async function ProjectDetailPage({
             </dl>
           </Section>
 
-          {/* Media */}
-          <Section title="Media">
-            <p className="mb-3 text-[12px] text-neutral-500">
-              Below shows the primary hero (from <code>imageUrl</code>) plus raw
-              entries for Image1…Image5 with their alt text. The direct URLs for
-              Image1…Image5 are not included by the current GROQ query; if you
-              want thumbnails here, we can either add{' '}
-              <code>{'asset->url'}</code> to the query or use the Sanity image
-              URL builder.
-            </p>
+          {/* Media meta (refs & alts) */}
+          <Section title="Media (Refs & Alt Text)">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {/* Image1 */}
               <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
