@@ -244,12 +244,6 @@ export default async function ProjectDetailPage({
                 </dd>
               </div>
               <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-                <dt className="text-[12px] text-neutral-500">Slug</dt>
-                <dd className="mt-1 text-[14px] font-medium text-neutral-900">
-                  {p.slug || '-'}
-                </dd>
-              </div>
-              <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
                 <dt className="text-[12px] text-neutral-500">Location</dt>
                 <dd className="mt-1 text-[14px] font-medium text-neutral-900">
                   {p.location || '-'}
@@ -287,23 +281,6 @@ export default async function ProjectDetailPage({
                 </dt>
                 <dd className="mt-1 text-[14px] font-medium text-neutral-900">
                   {p.sizeRangeFt2 || '-'}
-                </dd>
-              </div>
-              <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-                <dt className="text-[12px] text-neutral-500">Listing URL</dt>
-                <dd className="mt-1 text-[14px] font-medium break-all text-neutral-900">
-                  {p.listingURL ? (
-                    <Link
-                      href={p.listingURL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline decoration-neutral-300 underline-offset-4 hover:decoration-neutral-500"
-                    >
-                      {p.listingURL}
-                    </Link>
-                  ) : (
-                    '-'
-                  )}
                 </dd>
               </div>
             </dl>

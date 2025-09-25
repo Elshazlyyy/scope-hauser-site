@@ -1,4 +1,3 @@
-// src/app/api/lead/route.ts
 import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
 
@@ -51,7 +50,6 @@ export async function POST(req: Request) {
   try {
     const data = (await req.json()) as LeadPayload;
 
-    // Basic validation
     if (
       !data.firstName ||
       !data.lastName ||
@@ -74,7 +72,6 @@ export async function POST(req: Request) {
     const timestamp = new Date().toISOString();
     const fullPhone = `${data.dialCode} ${data.phone}`.trim();
 
-    // Order of columns → match your sheet header row exactly
     const row: (string | number | boolean)[] = [
       timestamp,
       data.firstName,
