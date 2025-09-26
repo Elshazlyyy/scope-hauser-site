@@ -187,12 +187,12 @@ export default async function ProjectDetailPage({
           </div>
         </header>
 
-        {/* Hero → Carousel */}
+        {/* Hero → Carousel (with per-slide caption from alt) */}
         <section className="relative mt-5 lg:mt-7">
           <div className="relative overflow-hidden rounded-2xl">
             <div className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth">
               {slides.map((s, idx) => (
-                <div
+                <figure
                   key={idx}
                   className="relative h-[232px] w-full flex-shrink-0 snap-center sm:h-[320px] lg:aspect-[21/9] lg:h-auto"
                 >
@@ -205,7 +205,13 @@ export default async function ProjectDetailPage({
                     sizes="(max-width: 1024px) 100vw, 1400px"
                     unoptimized
                   />
-                </div>
+                  {/* Caption overlay (from alt) */}
+                  {s.alt && (
+                    <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-4 py-2 text-[12px] text-white sm:text-[13px]">
+                      {s.alt}
+                    </figcaption>
+                  )}
+                </figure>
               ))}
             </div>
           </div>
@@ -284,37 +290,6 @@ export default async function ProjectDetailPage({
                 </dd>
               </div>
             </dl>
-          </Section>
-
-          {/* Media meta (refs & alts) */}
-          <Section title="Media (Refs & Alt Text)">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {/* Image1 */}
-              <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-                <div className="mt-2 text-[12px] text-neutral-500">Alt</div>
-                <div className="mt-1 text-[13px]">{p.image1Alt || '—'}</div>
-              </div>
-              {/* Image2 */}
-              <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-                <div className="mt-2 text-[12px] text-neutral-500">Alt</div>
-                <div className="mt-1 text-[13px]">{p.image2Alt || '—'}</div>
-              </div>
-              {/* Image3 */}
-              <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-                <div className="mt-2 text-[12px] text-neutral-500">Alt</div>
-                <div className="mt-1 text-[13px]">{p.image3Alt || '—'}</div>
-              </div>
-              {/* Image4 */}
-              <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-                <div className="mt-2 text-[12px] text-neutral-500">Alt</div>
-                <div className="mt-1 text-[13px]">{p.image4Alt || '—'}</div>
-              </div>
-              {/* Image5 */}
-              <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-                <div className="mt-2 text-[12px] text-neutral-500">Alt</div>
-                <div className="mt-1 text-[13px]">{p.image5Alt || '—'}</div>
-              </div>
-            </div>
           </Section>
         </div>
       </div>
