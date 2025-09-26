@@ -32,7 +32,7 @@ export default function MediaCarousel({ slides }: { slides: Slide[] }) {
   if (slides.length === 0) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-neutral-200 shadow-sm">
+    <div className="relative overflow-hidden border border-neutral-200 shadow-sm">
       {/* Scroller */}
       <div
         ref={scrollerRef}
@@ -75,7 +75,7 @@ export default function MediaCarousel({ slides }: { slides: Slide[] }) {
             type="button"
             aria-label="Previous slide"
             onClick={() => goto(index - 1)}
-            className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 text-[14px] shadow ring-1 ring-black/10 hover:bg-white"
+            className="absolute top-1/2 left-3 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 text-[14px] shadow ring-1 ring-black/10 hover:bg-white"
           >
             ‹
           </button>
@@ -83,7 +83,7 @@ export default function MediaCarousel({ slides }: { slides: Slide[] }) {
             type="button"
             aria-label="Next slide"
             onClick={() => goto(index + 1)}
-            className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 text-[14px] shadow ring-1 ring-black/10 hover:bg-white"
+            className="absolute top-1/2 right-3 z-10 -translate-y-1/2 rounded-full bg-white/90 p-2 text-[14px] shadow ring-1 ring-black/10 hover:bg-white"
           >
             ›
           </button>
