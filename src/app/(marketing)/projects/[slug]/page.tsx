@@ -53,20 +53,14 @@ export async function generateMetadata({
 function currencyAED(n?: number) {
   if (typeof n !== 'number') return undefined;
   try {
-    return new Intl.NumberFormat('en-AE', { style: 'currency', currency: 'AED', maximumFractionDigits: 0 }).format(n);
+    return new Intl.NumberFormat('en-AE', {
+      style: 'currency',
+      currency: 'AED',
+      maximumFractionDigits: 0,
+    }).format(n);
   } catch {
     return `AED ${n.toLocaleString()}`;
   }
-}
-
-function FactPill({ label, value }: { label: string; value?: string | number }) {
-  if (value === undefined || value === null || value === '') return null;
-  return (
-    <div className="inline-flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-3 py-1 text-[12px] text-neutral-700 shadow-sm">
-      <span className="font-medium text-neutral-900">{label}:</span>
-      <span className="tabular-nums">{value}</span>
-    </div>
-  );
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -104,7 +98,7 @@ export default async function ProjectDetailPage({
   const p = await client.fetch<Project | null>(projectBySlugQuery, { slug });
   if (!p) return notFound();
 
-  // Build slides deterministically: no nulls, no predicates
+  // Build slides deterministically
   const slides: Slide[] = [];
   const pairs: Array<{ ref?: SanityImageRef; alt?: string }> = [
     { ref: p.image1, alt: p.image1Alt },
@@ -122,25 +116,16 @@ export default async function ProjectDetailPage({
   return (
     <main className="bg-white">
       <div className="mx-auto w-full max-w-[1720px] px-4 pt-8 pb-10 sm:px-6 lg:px-14 lg:pt-12">
-        {/* Header */}
+        {/* Title (projectName shown once) */}
         <header className="lg:grid lg:grid-cols-12 lg:items-end lg:gap-10">
           <div className="lg:col-span-7">
             <h1 className="text-[24px] font-semibold text-neutral-900 sm:text-[28px] lg:text-[32px]">
               {p.projectName}
             </h1>
-            <div className="mt-2 flex flex-wrap gap-2">
-              <FactPill label="Slug" value={p.slug} />
-              <FactPill label="Location" value={p.location} />
-              <FactPill label="Property" value={p.propertyType} />
-              <FactPill label="Bedrooms" value={p.bedrooms} />
-              <FactPill label="Developer" value={p.developer} />
-              <FactPill label="Starting" value={currencyAED(p.startingPriceAED)} />
-              <FactPill label="Size (ft²)" value={p.sizeRangeFt2} />
-            </div>
           </div>
         </header>
 
-        {/* Hero Carousel */}
+        {/* Hero Carousel (alt caption only if provided) */}
         <section className="relative mt-5 lg:mt-7">
           <div className="relative overflow-hidden rounded-2xl shadow-lg">
             <div className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth">
@@ -151,7 +136,7 @@ export default async function ProjectDetailPage({
                 >
                   <Image
                     src={s.url}
-                    alt={s.alt ?? ''} // a11y: empty alt if none provided in CMS
+                    alt={s.alt ?? ''} // empty when CMS alt is missing
                     fill
                     priority={idx === 0}
                     className="object-cover"
@@ -171,7 +156,7 @@ export default async function ProjectDetailPage({
 
         {/* Content */}
         <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-3">
-          {/* Description */}
+          {/* Overview + one CTA (listingURL) */}
           <div className="lg:col-span-2 space-y-10">
             {p.description && (
               <Section title="Overview">
@@ -181,14 +166,10 @@ export default async function ProjectDetailPage({
             <CtaButton href={p.listingURL}>View Listing</CtaButton>
           </div>
 
-          {/* Key Facts */}
+          {/* Key Facts – each field appears only here */}
           <aside className="lg:col-span-1 lg:sticky lg:top-24 h-fit">
             <Section title="Key Facts">
               <dl className="grid grid-cols-1 gap-3">
-                <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-                  <dt className="text-[12px] text-neutral-500">Project Name</dt>
-                  <dd className="mt-1 text-[14px] font-medium text-neutral-900">{p.projectName || '-'}</dd>
-                </div>
                 <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
                   <dt className="text-[12px] text-neutral-500">Location</dt>
                   <dd className="mt-1 text-[14px] font-medium text-neutral-900">{p.location || '-'}</dd>
@@ -207,7 +188,9 @@ export default async function ProjectDetailPage({
                 </div>
                 <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
                   <dt className="text-[12px] text-neutral-500">Starting Price (AED)</dt>
-                  <dd className="mt-1 text-[14px] font-medium text-neutral-900">{currencyAED(p.startingPriceAED) || '-'}</dd>
+                  <dd className="mt-1 text-[14px] font-medium text-neutral-900">
+                    {currencyAED(p.startingPriceAED) || '-'}
+                  </dd>
                 </div>
                 <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
                   <dt className="text-[12px] text-neutral-500">Size Range (ft²)</dt>
