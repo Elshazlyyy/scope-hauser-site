@@ -29,9 +29,7 @@ export default function Footer() {
           <div className="lg:col-span-6 order-1">
             <LogoWordmark className="h-[28px] sm:h-[32px]" />
             <p className="mt-5 max-w-[680px] text-[13px] sm:text-[14px] text-[#ECEADF] leading-[1.15]">
-              <span className="block">simply dummy text of the printing and</span>
-              <span className="block">typesetting ind simply dummy text of the</span>
-              <span className="block">printing and typesetting ind</span>
+              <span className="block">Measured Decisions Lasting Value</span>
             </p>
 
             {/* Desktop only: Follow for more */}

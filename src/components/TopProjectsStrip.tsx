@@ -72,9 +72,7 @@ export default function TopProjectsStrip() {
                 Invest
               </h3>
               <p className="mt-4 max-w-[360px] text-[15px] text-neutral-700">
-                simply dummy text of the
-                <br />
-                printing and typesetting ind
+                Premium Luxury Collection
               </p>
             </div>
 
