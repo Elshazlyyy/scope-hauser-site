@@ -140,9 +140,7 @@ export default async function TopProjectsStrip() {
           <div className="grid grid-cols-1 items-center gap-10 xl:grid-cols-12">
             <div className="xl:col-span-3">
               <h3 className="text-[28px] font-semibold text-[#2B3119] sm:text-[32px]">
-                Top Projects To
-                <br />
-                Invest
+                Top Projects To Invest
               </h3>
               <p className="mt-4 max-w-[360px] text-[15px] text-neutral-700">
                 Premium Luxury Collection
