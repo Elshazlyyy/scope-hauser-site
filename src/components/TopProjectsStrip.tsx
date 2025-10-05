@@ -76,8 +76,8 @@ export default async function TopProjectsStrip() {
           </h2>
         </header>
 
-        {/* ===== Mobile header (match image start by using the same -mx-3 bleed) ===== */}
-        <div className="-mx-3 mb-4 sm:hidden">
+        {/* ===== Mobile header (visible only on small screens) ===== */}
+        <div className="mb-4 sm:hidden">
           <h3 className="text-[20px] leading-snug font-semibold text-[#2B3119]">
             Top Projects To Invest
           </h3>
@@ -86,9 +86,9 @@ export default async function TopProjectsStrip() {
           </p>
         </div>
 
-        {/* ===== Mobile: 4 stacked rectangles ===== */}
+        {/* ===== Mobile: 4 stacked rectangles (aligned with text padding) ===== */}
         <div className="block sm:hidden">
-          <div className="-mx-3 space-y-3">
+          <div className="space-y-3">
             {[t1, t2, t3, t4].map((p, idx) => {
               const key = p?.slug ?? `tile-${idx + 1}`;
               const { src, alt } = getPrimaryImage(p);
