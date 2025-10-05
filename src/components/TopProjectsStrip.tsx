@@ -97,17 +97,24 @@ export default async function TopProjectsStrip() {
                   key={key}
                   className="relative h-[160px] w-full overflow-hidden"
                 >
+                  {/* Full-tile overlay link (only if project exists) */}
+                  {p && (
+                    <Link
+                      href={`/projects/${p.slug}`}
+                      aria-label={`View details for ${p.projectName}`}
+                      className="absolute inset-0 z-10"
+                    />
+                  )}
+
                   {p && src ? (
-                    <Link href={`/projects/${p.slug}`}>
-                      <Image
-                        src={src}
-                        alt={alt}
-                        fill
-                        className="object-cover"
-                        sizes="100vw"
-                        priority={idx === 0}
-                      />
-                    </Link>
+                    <Image
+                      src={src}
+                      alt={alt}
+                      fill
+                      className="object-cover"
+                      sizes="100vw"
+                      priority={idx === 0}
+                    />
                   ) : (
                     <div className="flex h-full w-full items-end bg-neutral-200 px-4 pb-3 text-neutral-600">
                       <span className="text-sm">No project selected</span>
@@ -144,17 +151,24 @@ export default async function TopProjectsStrip() {
 
             <div className="xl:col-span-9">
               <figure className="relative h-[260px] w-full overflow-hidden rounded-none shadow-[0_8px_28px_rgba(0,0,0,0.10)]">
+                {/* Full-tile overlay link */}
+                {t1 && (
+                  <Link
+                    href={`/projects/${t1.slug}`}
+                    aria-label={`View details for ${t1.projectName}`}
+                    className="absolute inset-0 z-10"
+                  />
+                )}
+
                 {t1 && heroImg.src ? (
-                  <Link href={`/projects/${t1.slug}`}>
-                    <Image
-                      src={heroImg.src}
-                      alt={heroImg.alt}
-                      fill
-                      className="object-cover"
-                      sizes="(min-width:1280px) 70vw, 100vw"
-                      priority
-                    />
-                  </Link>
+                  <Image
+                    src={heroImg.src}
+                    alt={heroImg.alt}
+                    fill
+                    className="object-cover"
+                    sizes="(min-width:1280px) 70vw, 100vw"
+                    priority
+                  />
                 ) : (
                   <div className="flex h-full w-full items-end bg-neutral-200 px-6 pb-5 text-neutral-600">
                     <span className="text-base">
@@ -178,16 +192,23 @@ export default async function TopProjectsStrip() {
           <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-8">
             {/* Tile 2 (wide) */}
             <figure className="relative h-[300px] w-full overflow-hidden rounded-none shadow-[0_8px_28px_rgba(0,0,0,0.10)] md:col-span-4">
+              {/* Full-tile overlay link */}
+              {t2 && (
+                <Link
+                  href={`/projects/${t2.slug}`}
+                  aria-label={`View details for ${t2.projectName}`}
+                  className="absolute inset-0 z-10"
+                />
+              )}
+
               {t2 && s2Img.src ? (
-                <Link href={`/projects/${t2.slug}`}>
-                  <Image
-                    src={s2Img.src}
-                    alt={s2Img.alt}
-                    fill
-                    className="object-cover"
-                    sizes="(min-width:1024px) 50vw, 100vw"
-                  />
-                </Link>
+                <Image
+                  src={s2Img.src}
+                  alt={s2Img.alt}
+                  fill
+                  className="object-cover"
+                  sizes="(min-width:1024px) 50vw, 100vw"
+                />
               ) : (
                 <div className="flex h-full w-full items-end bg-neutral-200 px-6 pb-5 text-neutral-600">
                   <span className="text-base">
@@ -207,16 +228,23 @@ export default async function TopProjectsStrip() {
 
             {/* Tile 3 */}
             <figure className="relative h-[300px] w-full overflow-hidden rounded-none shadow-[0_8px_28px_rgba(0,0,0,0.10)] md:col-span-2">
+              {/* Full-tile overlay link */}
+              {t3 && (
+                <Link
+                  href={`/projects/${t3.slug}`}
+                  aria-label={`View details for ${t3.projectName}`}
+                  className="absolute inset-0 z-10"
+                />
+              )}
+
               {t3 && s3Img.src ? (
-                <Link href={`/projects/${t3.slug}`}>
-                  <Image
-                    src={s3Img.src}
-                    alt={s3Img.alt}
-                    fill
-                    className="object-cover"
-                    sizes="(min-width:1024px) 25vw, 100vw"
-                  />
-                </Link>
+                <Image
+                  src={s3Img.src}
+                  alt={s3Img.alt}
+                  fill
+                  className="object-cover"
+                  sizes="(min-width:1024px) 25vw, 100vw"
+                />
               ) : (
                 <div className="flex h-full w-full items-end bg-neutral-200 px-6 pb-5 text-neutral-600">
                   <span className="text-base">
@@ -236,16 +264,23 @@ export default async function TopProjectsStrip() {
 
             {/* Tile 4 */}
             <figure className="relative h-[300px] w-full overflow-hidden rounded-none shadow-[0_8px_28px_rgba(0,0,0,0.10)] md:col-span-2">
+              {/* Full-tile overlay link */}
+              {t4 && (
+                <Link
+                  href={`/projects/${t4.slug}`}
+                  aria-label={`View details for ${t4.projectName}`}
+                  className="absolute inset-0 z-10"
+                />
+              )}
+
               {t4 && s4Img.src ? (
-                <Link href={`/projects/${t4.slug}`}>
-                  <Image
-                    src={s4Img.src}
-                    alt={s4Img.alt}
-                    fill
-                    className="object-cover"
-                    sizes="(min-width:1024px) 25vw, 100vw"
-                  />
-                </Link>
+                <Image
+                  src={s4Img.src}
+                  alt={s4Img.alt}
+                  fill
+                  className="object-cover"
+                  sizes="(min-width:1024px) 25vw, 100vw"
+                />
               ) : (
                 <div className="flex h-full w-full items-end bg-neutral-200 px-6 pb-5 text-neutral-600">
                   <span className="text-base">
