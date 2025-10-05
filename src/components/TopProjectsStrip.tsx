@@ -95,14 +95,14 @@ export default async function TopProjectsStrip() {
               return (
                 <figure
                   key={key}
-                  className="relative h-[160px] w-full overflow-hidden"
+                  className="group relative h-[160px] w-full overflow-hidden"
                 >
                   {/* Full-tile overlay link (only if project exists) */}
                   {p && (
                     <Link
                       href={`/projects/${p.slug}`}
                       aria-label={`View details for ${p.projectName}`}
-                      className="absolute inset-0 z-10"
+                      className="absolute inset-0 z-10 focus-visible:outline-none"
                     />
                   )}
 
@@ -111,7 +111,7 @@ export default async function TopProjectsStrip() {
                       src={src}
                       alt={alt}
                       fill
-                      className="object-cover"
+                      className="object-cover transition-transform duration-300 ease-out will-change-transform group-hover:scale-[1.02]"
                       sizes="100vw"
                       priority={idx === 0}
                     />
@@ -120,13 +120,15 @@ export default async function TopProjectsStrip() {
                       <span className="text-sm">No project selected</span>
                     </div>
                   )}
+
+                  {/* Gradient + caption */}
                   {p && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
-                  )}
-                  {p && (
-                    <figcaption className="absolute bottom-3 left-4 text-[16px] font-semibold tracking-tight text-white">
-                      {p.projectName}
-                    </figcaption>
+                    <>
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent transition-opacity duration-300 group-hover:from-black/45 group-hover:via-black/15" />
+                      <figcaption className="pointer-events-none absolute bottom-3 left-4 text-[16px] font-semibold tracking-tight text-white">
+                        {p.projectName}
+                      </figcaption>
+                    </>
                   )}
                 </figure>
               );
@@ -148,13 +150,13 @@ export default async function TopProjectsStrip() {
             </div>
 
             <div className="xl:col-span-9">
-              <figure className="relative h-[260px] w-full overflow-hidden rounded-none shadow-[0_8px_28px_rgba(0,0,0,0.10)]">
+              <figure className="group relative h-[260px] w-full overflow-hidden rounded-none shadow-[0_8px_28px_rgba(0,0,0,0.10)]">
                 {/* Full-tile overlay link */}
                 {t1 && (
                   <Link
                     href={`/projects/${t1.slug}`}
                     aria-label={`View details for ${t1.projectName}`}
-                    className="absolute inset-0 z-10"
+                    className="absolute inset-0 z-10 focus-visible:outline-none"
                   />
                 )}
 
@@ -163,7 +165,7 @@ export default async function TopProjectsStrip() {
                     src={heroImg.src}
                     alt={heroImg.alt}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-300 ease-out will-change-transform group-hover:scale-[1.02]"
                     sizes="(min-width:1280px) 70vw, 100vw"
                     priority
                   />
@@ -175,12 +177,12 @@ export default async function TopProjectsStrip() {
                   </div>
                 )}
                 {t1 && (
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
-                )}
-                {t1 && (
-                  <figcaption className="absolute bottom-5 left-6 text-[22px] font-semibold tracking-tight text-white">
-                    {t1.projectName}
-                  </figcaption>
+                  <>
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent transition-opacity duration-300 group-hover:from-black/45 group-hover:via-black/15" />
+                    <figcaption className="pointer-events-none absolute bottom-5 left-6 text-[22px] font-semibold tracking-tight text-white">
+                      {t1.projectName}
+                    </figcaption>
+                  </>
                 )}
               </figure>
             </div>
@@ -189,13 +191,13 @@ export default async function TopProjectsStrip() {
           {/* Row 2: Tiles 2,3,4 */}
           <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-8">
             {/* Tile 2 (wide) */}
-            <figure className="relative h-[300px] w-full overflow-hidden rounded-none shadow-[0_8px_28px_rgba(0,0,0,0.10)] md:col-span-4">
+            <figure className="group relative h-[300px] w-full overflow-hidden rounded-none shadow-[0_8px_28px_rgba(0,0,0,0.10)] md:col-span-4">
               {/* Full-tile overlay link */}
               {t2 && (
                 <Link
                   href={`/projects/${t2.slug}`}
                   aria-label={`View details for ${t2.projectName}`}
-                  className="absolute inset-0 z-10"
+                  className="absolute inset-0 z-10 focus-visible:outline-none"
                 />
               )}
 
@@ -204,7 +206,7 @@ export default async function TopProjectsStrip() {
                   src={s2Img.src}
                   alt={s2Img.alt}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-300 ease-out will-change-transform group-hover:scale-[1.02]"
                   sizes="(min-width:1024px) 50vw, 100vw"
                 />
               ) : (
@@ -215,23 +217,23 @@ export default async function TopProjectsStrip() {
                 </div>
               )}
               {t2 && (
-                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
-              )}
-              {t2 && (
-                <figcaption className="absolute bottom-5 left-6 text-[20px] font-semibold tracking-tight text-white">
-                  {t2.projectName}
-                </figcaption>
+                <>
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent transition-opacity duration-300 group-hover:from-black/50 group-hover:via-black/15" />
+                  <figcaption className="pointer-events-none absolute bottom-5 left-6 text-[20px] font-semibold tracking-tight text-white">
+                    {t2.projectName}
+                  </figcaption>
+                </>
               )}
             </figure>
 
             {/* Tile 3 */}
-            <figure className="relative h-[300px] w-full overflow-hidden rounded-none shadow-[0_8px_28px_rgba(0,0,0,0.10)] md:col-span-2">
+            <figure className="group relative h-[300px] w-full overflow-hidden rounded-none shadow-[0_8px_28px_rgba(0,0,0,0.10)] md:col-span-2">
               {/* Full-tile overlay link */}
               {t3 && (
                 <Link
                   href={`/projects/${t3.slug}`}
                   aria-label={`View details for ${t3.projectName}`}
-                  className="absolute inset-0 z-10"
+                  className="absolute inset-0 z-10 focus-visible:outline-none"
                 />
               )}
 
@@ -240,7 +242,7 @@ export default async function TopProjectsStrip() {
                   src={s3Img.src}
                   alt={s3Img.alt}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-300 ease-out will-change-transform group-hover:scale-[1.02]"
                   sizes="(min-width:1024px) 25vw, 100vw"
                 />
               ) : (
@@ -251,23 +253,23 @@ export default async function TopProjectsStrip() {
                 </div>
               )}
               {t3 && (
-                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
-              )}
-              {t3 && (
-                <figcaption className="absolute bottom-5 left-6 text-[20px] font-semibold tracking-tight text-white">
-                  {t3.projectName}
-                </figcaption>
+                <>
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent transition-opacity duration-300 group-hover:from-black/50 group-hover:via-black/15" />
+                  <figcaption className="pointer-events-none absolute bottom-5 left-6 text-[20px] font-semibold tracking-tight text-white">
+                    {t3.projectName}
+                  </figcaption>
+                </>
               )}
             </figure>
 
             {/* Tile 4 */}
-            <figure className="relative h-[300px] w-full overflow-hidden rounded-none shadow-[0_8px_28px_rgba(0,0,0,0.10)] md:col-span-2">
+            <figure className="group relative h-[300px] w-full overflow-hidden rounded-none shadow-[0_8px_28px_rgba(0,0,0,0.10)] md:col-span-2">
               {/* Full-tile overlay link */}
               {t4 && (
                 <Link
                   href={`/projects/${t4.slug}`}
                   aria-label={`View details for ${t4.projectName}`}
-                  className="absolute inset-0 z-10"
+                  className="absolute inset-0 z-10 focus-visible:outline-none"
                 />
               )}
 
@@ -276,7 +278,7 @@ export default async function TopProjectsStrip() {
                   src={s4Img.src}
                   alt={s4Img.alt}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-300 ease-out will-change-transform group-hover:scale-[1.02]"
                   sizes="(min-width:1024px) 25vw, 100vw"
                 />
               ) : (
@@ -287,12 +289,12 @@ export default async function TopProjectsStrip() {
                 </div>
               )}
               {t4 && (
-                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
-              )}
-              {t4 && (
-                <figcaption className="absolute bottom-5 left-6 text-[20px] font-semibold tracking-tight text-white">
-                  {t4.projectName}
-                </figcaption>
+                <>
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent transition-opacity duration-300 group-hover:from-black/50 group-hover:via-black/15" />
+                  <figcaption className="pointer-events-none absolute bottom-5 left-6 text-[20px] font-semibold tracking-tight text-white">
+                    {t4.projectName}
+                  </figcaption>
+                </>
               )}
             </figure>
           </div>
