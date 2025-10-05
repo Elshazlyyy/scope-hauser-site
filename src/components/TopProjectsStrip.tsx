@@ -36,11 +36,8 @@ function getPrimaryImage(p?: Project) {
 }
 
 export default async function TopProjectsStrip() {
-  // ⚠️ Disable CDN for this call to avoid stale data when you change topTile
+  // Disable CDN here to avoid stale results when topTile changes
   const liveClient = client.withConfig({ useCdn: false });
-
-  // You can also add Next.js caching control if you want ISR:
-  // const data = await liveClient.fetch(topProjectsByTileQuery, {}, { next: { revalidate: 60 } })
 
   const data = await liveClient.fetch<{
     tile1?: Project;
@@ -78,6 +75,18 @@ export default async function TopProjectsStrip() {
             </span>
           </h2>
         </header>
+
+        {/* ===== Mobile header (visible only on small screens) ===== */}
+        <div className="mb-4 sm:hidden">
+          <h3 className="text-[20px] font-semibold text-[#2B3119]">
+            Top Projects To
+            <br />
+            Invest
+          </h3>
+          <p className="mt-2 text-[14px] text-neutral-700">
+            Premium Luxury Collection
+          </p>
+        </div>
 
         {/* ===== Mobile: 4 stacked rectangles ===== */}
         <div className="block sm:hidden">
