@@ -19,6 +19,51 @@ export default defineType({
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
+
+    // NEW: Top Projects tile selector
+    defineField({
+      name: 'topTile',
+      title: 'Top Projects Tile',
+      type: 'number',
+      description:
+        'Assign to the homepage “Top Projects” strip. 1 = wide hero (top), 2–4 = secondary tiles (left→right). Leave empty for non-featured.',
+      options: {
+        list: [
+          { title: '1 — Hero (wide)', value: 1 },
+          { title: '2 — Secondary (left)', value: 2 },
+          { title: '3 — Secondary (middle)', value: 3 },
+          { title: '4 — Secondary (right)', value: 4 },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+      // Enforce uniqueness per tile across documents.
+      // If duplicates exist (e.g., due to drafts or race), the UI will still render the *latest updated* one.
+      validation: (Rule) =>
+        Rule.custom(async (value, context) => {
+          if (value === undefined || value === null) return true;
+
+          const client = context.getClient({ apiVersion: '2025-01-01' });
+          const docId = context?.document?._id;
+
+          // Count other projects (excluding this doc and its counterpart draft/published) with the same tile
+          const duplicates = await client.fetch(
+            `count(*[
+              _type == "project" &&
+              defined(topTile) &&
+              topTile == $tile &&
+              !(_id in [$id, replace($id, "drafts.", "")])
+            ])`,
+            { tile: value, id: docId }
+          );
+
+          if (duplicates > 0) {
+            return 'This tile number is already used by another Project. Clear it there first.';
+          }
+          return true;
+        }),
+    }),
+
     defineField({ name: 'location', title: 'Location', type: 'string' }),
     defineField({ name: 'propertyType', title: 'Property Type', type: 'string' }),
     defineField({ name: 'bedrooms', title: 'Bedrooms', type: 'string' }),

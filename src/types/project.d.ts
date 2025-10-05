@@ -7,8 +7,11 @@ export type SanityImageRef = {
 
 export type Project = {
   slug: string
-  projectName: string          // canonical name (replaces legacy `title`)
-  imageUrl?: string            // convenience: first available image URL
+  projectName: string
+  imageUrl?: string
+
+  // NEW
+  topTile?: 1 | 2 | 3 | 4
 
   location?: string
   propertyType?: string
@@ -19,7 +22,6 @@ export type Project = {
   description?: string
   listingURL?: string
 
-  // Image1..Image5 + alts, matching your schema
   image1?: SanityImageRef; image1Alt?: string
   image2?: SanityImageRef; image2Alt?: string
   image3?: SanityImageRef; image3Alt?: string

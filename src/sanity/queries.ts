@@ -1,10 +1,10 @@
 // src/sanity/queries.ts
 import { groq } from 'next-sanity'
 
-// Reusable selection of fields that matches your schema
 const PROJECT_FIELDS = groq`
   "slug": slug.current,
   projectName,
+  topTile,
   location,
   propertyType,
   bedrooms,
@@ -14,7 +14,7 @@ const PROJECT_FIELDS = groq`
   description,
   listingURL,
 
-  // Fallback URL for current UI
+  // Fallback image URL
   "imageUrl": coalesce(
     image1.asset->url,
     image2.asset->url,
@@ -40,4 +40,15 @@ export const projectBySlugQuery = groq`
   *[_type == "project" && slug.current == $slug][0]{
     ${PROJECT_FIELDS}
   }
+`
+
+// NEW: For the 4-tile “Top Projects” strip.
+// For each tile (1..4) pick the most recently updated project if duplicates exist.
+export const topProjectsByTileQuery = groq`
+{
+  "tile1": *[_type=="project" && topTile == 1] | order(_updatedAt desc)[0]{ ${PROJECT_FIELDS} },
+  "tile2": *[_type=="project" && topTile == 2] | order(_updatedAt desc)[0]{ ${PROJECT_FIELDS} },
+  "tile3": *[_type=="project" && topTile == 3] | order(_updatedAt desc)[0]{ ${PROJECT_FIELDS} },
+  "tile4": *[_type=="project" && topTile == 4] | order(_updatedAt desc)[0]{ ${PROJECT_FIELDS} }
+}
 `
