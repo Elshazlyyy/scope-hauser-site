@@ -148,13 +148,28 @@ export default function RegisterModal({
                 Please share your details and we’ll get back to you shortly.
               </Dialog.Description>
             </div>
+
             <Dialog.Close
-              className="ml-3 inline-flex h-10 w-10 items-center justify-center rounded text-[22px] leading-none text-neutral-500 hover:bg-neutral-100 disabled:opacity-50"
+              className="ml-3 grid h-10 w-10 place-items-center rounded text-neutral-500 hover:bg-neutral-100 disabled:opacity-50"
               aria-label="Close"
               title="Close"
               disabled={disabled}
             >
-              ×
+              {/* Centered X icon */}
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M6 6l12 12M18 6L6 18"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
             </Dialog.Close>
           </div>
 
