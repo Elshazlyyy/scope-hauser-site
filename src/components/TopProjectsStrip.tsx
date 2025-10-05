@@ -78,10 +78,8 @@ export default async function TopProjectsStrip() {
 
         {/* ===== Mobile header (visible only on small screens) ===== */}
         <div className="mb-4 sm:hidden">
-          <h3 className="text-[20px] font-semibold text-[#2B3119]">
-            Top Projects To
-            <br />
-            Invest
+          <h3 className="text-[20px] leading-snug font-semibold text-[#2B3119]">
+            Top Projects To Invest
           </h3>
           <p className="mt-2 text-[14px] text-neutral-700">
             Premium Luxury Collection
