@@ -1,23 +1,16 @@
 // sanity/schemaTypes/project.ts
 import { defineType, defineField } from 'sanity';
+import type { ValidationContext } from 'sanity';
 
-type ValidatorContext = {
-  getClient: (opts?: { apiVersion?: string }) => {
-    fetch: <T = unknown>(
-      query: string,
-      params?: Record<string, unknown>,
-    ) => Promise<T>;
-  };
-  document?: { _id?: string; topTile?: number };
-};
+type DocWithTopTile = { _id?: string; topTile?: number };
 
 export default defineType({
   name: 'project',
   title: 'Project',
   type: 'document',
 
-  // ✅ Auto-pick first free tile at the *document* level (allowed to omit field)
-  // If all 1..4 are taken, we just don’t set topTile.
+  // Auto-pick first free tile at document creation.
+  // If all tiles (1..4) are taken, we leave topTile unset.
   initialValue: async (_params, { getClient }) => {
     const client = getClient({ apiVersion: '2025-01-01' });
     const assigned = await client.fetch<number[]>(
@@ -36,6 +29,7 @@ export default defineType({
       options: { source: 'projectName', maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
+
     defineField({
       name: 'projectName',
       title: 'Project Name',
@@ -43,7 +37,6 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
-    // --- Top Projects tile selector ---
     defineField({
       name: 'topTile',
       title: 'Top Projects Tile',
@@ -60,25 +53,24 @@ export default defineType({
         layout: 'radio',
         direction: 'horizontal',
       },
-
-      // ✅ Enforce uniqueness per tile; optionally cap total featured to 4
       validation: (Rule) =>
         Rule.custom(
           async (
             value: number | undefined | null,
-            context: ValidatorContext,
+            context: ValidationContext,
           ) => {
             if (value === undefined || value === null) return true;
 
             const client = context.getClient({ apiVersion: '2025-01-01' });
-            const id = context.document?._id || '';
+            const doc = (context.document || {}) as DocWithTopTile;
+            const id = doc._id || '';
 
-            // Compute both IDs in JS; pass into GROQ as params (no replace() needed)
+            // Derive counterpart IDs (draft/published)
             const isDraft = id.startsWith('drafts.');
             const publishedId = isDraft ? id.slice(7) : id;
             const draftId = isDraft ? id : `drafts.${id}`;
 
-            // Uniqueness for chosen tile (exclude this doc's draft/published pair)
+            // Enforce uniqueness for the chosen tile (exclude this doc & its counterpart)
             const duplicates = await client.fetch<number>(
               `count(*[
               _type == "project" &&
@@ -92,8 +84,8 @@ export default defineType({
               return 'This tile number is already used by another Project. Clear it there first.';
             }
 
-            // Optional hard cap: at most 4 featured total when newly assigning
-            const hadTileBefore = typeof context.document?.topTile === 'number';
+            // Optional hard cap: block assigning a 5th featured project
+            const hadTileBefore = typeof doc.topTile === 'number';
             if (!hadTileBefore) {
               const featuredCount = await client.fetch<number>(
                 `count(*[
@@ -139,7 +131,7 @@ export default defineType({
     }),
     defineField({ name: 'listingURL', title: 'Listing URL', type: 'url' }),
 
-    // Images + alts
+    // Image1 → Image5 with alts
     defineField({
       name: 'image1',
       title: 'Image1',
