@@ -76,8 +76,8 @@ export default async function TopProjectsStrip() {
           </h2>
         </header>
 
-        {/* ===== Mobile header (visible only on small screens) ===== */}
-        <div className="mb-4 sm:hidden">
+        {/* ===== Mobile header (match image start by using the same -mx-3 bleed) ===== */}
+        <div className="-mx-3 mb-4 sm:hidden">
           <h3 className="text-[20px] leading-snug font-semibold text-[#2B3119]">
             Top Projects To Invest
           </h3>
