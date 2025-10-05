@@ -11,7 +11,7 @@ import { groq } from 'next-sanity';
 import type { Project } from '@/types/project';
 
 // ✅ Updated query to use projectName and image1..image5
-const PROJECTS_QUERY = groq/* groq */ `
+const PROJECTS_QUERY = groq /* groq */ `
   *[_type == "project"] | order(projectName asc) {
     "slug": slug.current,
     projectName,
@@ -76,12 +76,12 @@ export default function ProjectsCarousel() {
       <div className="mx-auto w-full max-w-[1720px] px-6 py-16 sm:px-10 lg:px-14 lg:py-20">
         <div className="grid grid-cols-1 items-start gap-10 xl:grid-cols-12">
           {/* ===== Mobile Heading + CTA before carousel ===== */}
-          <div className="block sm:hidden mb-6">
+          <div className="mb-6 block sm:hidden">
             <h2 className="text-[28px] font-semibold text-neutral-900">
               Top Projects to invest
             </h2>
-            <p className="mt-2 text-neutral-700 text-[15px]">
-              simply dummy text of the printing and typesetting
+            <p className="mt-2 text-[15px] text-neutral-700">
+              Premium Luxury Collection
             </p>
             <Link
               href="/projects"
@@ -98,7 +98,7 @@ export default function ProjectsCarousel() {
             {/* Mobile vertical scroll */}
             <div className="block sm:hidden">
               <div
-                className={`h-screen overflow-y-auto snap-y snap-mandatory space-y-4 ${styles['hide-scrollbar']}`}
+                className={`h-screen snap-y snap-mandatory space-y-4 overflow-y-auto ${styles['hide-scrollbar']}`}
               >
                 {projects.map((p) => (
                   <div key={p.slug} className="h-1/3 snap-start">
@@ -109,8 +109,8 @@ export default function ProjectsCarousel() {
             </div>
 
             {/* Desktop/Tablet horizontal carousel */}
-            <div className="hidden sm:block overflow-hidden" ref={emblaRef}>
-              <div className="flex select-none touch-pan-y gap-8">
+            <div className="hidden overflow-hidden sm:block" ref={emblaRef}>
+              <div className="flex touch-pan-y gap-8 select-none">
                 {projects.map((p) => (
                   <div
                     key={p.slug}
