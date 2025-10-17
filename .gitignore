@@ -1,49 +1,105 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
-/node_modules
-/.pnp
+############################
+# Dependencies / Package mgr
+############################
+node_modules/
+.pnp/
 .pnp.*
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+# pnpm store (local)
+.pnpm-store/
 
-# testing
-/coverage
+# DO NOT ignore lockfiles for apps (keep deterministic builds)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
 
-# next.js
-/.next/
-/out/
+#########
+# Next.js
+#########
+.next/
+.next/cache/
+out/
+# Sometimes Next/SWC writes this in monorepos
+.swc/
 
-# production
-/build
+############
+# Build Artifacts
+############
+build/
+dist/
+.tmp/
+temp/
+tmp/
 
-# misc
-.DS_Store
-*.pem
+########
+# Testing
+########
+coverage/
+.nyc_output/
+# Cypress (if used)
+cypress/screenshots/
+cypress/videos/
+# Playwright (if used)
+playwright-report/
+test-results/
 
-# debug
+#########
+# Logs
+#########
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+###########
+# Env & Secrets
+###########
+# Keep real secrets out of git; commit only sanitized samples
 .env*
 !.env.example
+# Common secret/config files
+.npmrc
+.sentryclirc
+# If you ever keep service-account JSON locally, ignore them explicitly:
+service-account*.json
+keys/**
 
-# vercel
-.vercel
+#########
+# Tooling caches
+#########
+.eslintcache
+.stylelintcache
+.cache/
+.parcel-cache/
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+#########
+# Editors/OS
+#########
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
 
-# sanity
+#########
+# Hosting/Platforms
+#########
+.vercel/
+
+#########
+# Sanity
+#########
 .sanity
 
-# local dev
-.vscode
-.idea
+#########
+# TypeScript
+#########
+*.tsbuildinfo
+next-env.d.ts
