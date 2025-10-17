@@ -1,4 +1,3 @@
-// src/components/RegisterModal.tsx
 'use client';
 
 import * as Dialog from '@radix-ui/react-dialog';
@@ -48,10 +47,10 @@ export default function RegisterModal({
     status: 'idle',
   });
 
-  // Auto-close after success (optional)
+  // Auto-close after success
   useEffect(() => {
     if (submitState.status === 'success') {
-      const t = setTimeout(() => onOpenChange(false), 1600);
+      const t = setTimeout(() => onOpenChange(false), 1800);
       return () => clearTimeout(t);
     }
   }, [submitState, onOpenChange]);
@@ -60,7 +59,7 @@ export default function RegisterModal({
     if (!data.consent) {
       setSubmitState({
         status: 'error',
-        message: 'Please accept the Privacy Policy & Terms to proceed.',
+        message: 'Please accept the Privacy Policy & Terms to continue.',
       });
       return;
     }
@@ -69,7 +68,6 @@ export default function RegisterModal({
 
     try {
       const endpoint = '/api/lead';
-
       const payload = {
         ...data,
         fullPhone: `${data.dialCode} ${data.phone}`.trim(),
@@ -90,18 +88,9 @@ export default function RegisterModal({
       clearTimeout(timeout);
 
       if (!res.ok) {
-        // Try to surface server message if present
-        let serverMsg = '';
-        try {
-          const t = await res.text();
-          serverMsg = t;
-        } catch {
-          /* ignore */
-        }
-        throw new Error(serverMsg || `Lead endpoint returned ${res.status}`);
+        throw new Error('We couldn’t send your details. Please try again.');
       }
 
-      // --- New: read Bitrix status from API response
       type ApiResponse = {
         ok: boolean;
         bitrixOk?: boolean;
@@ -110,17 +99,16 @@ export default function RegisterModal({
       let bitrixOk = true;
       try {
         const json: ApiResponse = await res.json();
-        bitrixOk = typeof json.bitrixOk === 'boolean' ? json.bitrixOk : true;
+        bitrixOk = json.bitrixOk ?? true;
       } catch {
-        // If parsing fails, keep normal success UX
         bitrixOk = true;
       }
 
       setSubmitState({
         status: 'success',
         message: bitrixOk
-          ? 'Thanks! Your details were submitted successfully.'
-          : 'Thanks! Saved. (Heads-up: CRM sync will retry shortly.)',
+          ? 'Thank you! Your details have been submitted successfully.'
+          : 'Thank you! Your details were received. We’ll reach out soon.',
       });
 
       reset({
@@ -137,14 +125,13 @@ export default function RegisterModal({
       const msg =
         e instanceof Error
           ? e.message
-          : 'Something went wrong. Please try again in a moment.';
-      setSubmitState({
-        status: 'error',
-        message:
-          msg.includes('The user aborted a request') || msg.includes('aborted')
-            ? 'Request timed out. Please try again.'
-            : `Could not submit your details. ${msg}`,
-      });
+          : 'Something went wrong. Please try again.';
+      const friendly =
+        msg.toLowerCase().includes('abort') ||
+        msg.toLowerCase().includes('timeout')
+          ? 'Request timed out. Please try again.'
+          : msg;
+      setSubmitState({ status: 'error', message: friendly });
     }
   }
 
@@ -180,7 +167,6 @@ export default function RegisterModal({
               title="Close"
               disabled={disabled}
             >
-              {/* Centered X icon */}
               <svg
                 width="16"
                 height="16"
@@ -198,7 +184,7 @@ export default function RegisterModal({
             </Dialog.Close>
           </div>
 
-          {/* Status banner */}
+          {/* Feedback messages */}
           {submitState.status === 'error' && (
             <div className="mx-6 mt-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700">
               {submitState.message}
@@ -276,7 +262,7 @@ export default function RegisterModal({
             </div>
 
             <div className={fieldWrap}>
-              <label className={label}>Preferred Language</label>
+              <label className={label}>Preferred language</label>
               <div className="relative">
                 <select
                   {...register('language')}
@@ -305,7 +291,7 @@ export default function RegisterModal({
                   className="mt-0.5"
                   disabled={disabled}
                 />
-                I&apos;m Interested in the Golden Visa
+                I’m interested in the Golden Visa
               </label>
               <label className="flex items-start gap-2 text-[13px] text-[#2B3119]">
                 <input
@@ -314,7 +300,7 @@ export default function RegisterModal({
                   className="mt-0.5"
                   disabled={disabled}
                 />
-                I Consent to the Privacy Policy &amp; Terms and Conditions
+                I consent to the Privacy Policy & Terms and Conditions
               </label>
             </div>
 

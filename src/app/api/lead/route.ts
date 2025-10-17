@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
 
+// Ensure Node.js runtime (googleapis won't work on Edge)
+export const runtime = 'nodejs';
+// Always compute fresh (no ISR cache for API)
+export const dynamic = 'force-dynamic';
+
 type LeadPayload = {
   firstName: string;
   lastName: string;
@@ -14,6 +19,8 @@ type LeadPayload = {
   timestamp?: string;
 };
 
+type BitrixLeadAddSuccess = { result: number };
+
 type BitrixLeadAddRequest = {
   fields: {
     TITLE: string;
@@ -26,14 +33,47 @@ type BitrixLeadAddRequest = {
     EMAIL: Array<{ VALUE: string; VALUE_TYPE: 'WORK' | 'HOME' | string }>;
     SOURCE_ID: string;
     COMMENTS?: string;
-    // Add any UF_* custom fields here if you later need them
+    // Add UF_* codes here if you later need custom fields, e.g. "UF_CRM_XXXX": "value"
   };
 };
 
-type BitrixLeadAddSuccess = { result: number };
-type BitrixErrorShape = { error?: string; error_description?: string };
+// ------------- Small utils & guards -------------
+function isRecord(x: unknown): x is Record<string, unknown> {
+  return typeof x === 'object' && x !== null;
+}
+function isBitrixSuccess(x: unknown): x is BitrixLeadAddSuccess {
+  return isRecord(x) && typeof x.result === 'number';
+}
+function parseJson(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error(`Non-JSON response: ${text.slice(0, 200)}`);
+  }
+}
 
-// -------- Google Sheets helpers --------
+function normalizePhone(dialCode: string, phone: string): string {
+  const cleanDial = dialCode.trim();
+  const cleanPhone = phone.replace(/[^\d+]/g, '').trim();
+  return `${cleanDial} ${cleanPhone}`.trim();
+}
+
+function toFormUrlEncoded(body: Record<string, unknown>): string {
+  const params = new URLSearchParams();
+  const flatten = (prefix: string, value: unknown) => {
+    if (Array.isArray(value)) {
+      value.forEach((v, i) => flatten(`${prefix}[${i}]`, v));
+    } else if (typeof value === 'object' && value !== null) {
+      for (const [k, v] of Object.entries(value)) flatten(`${prefix}[${k}]`, v);
+    } else if (value !== undefined && value !== null) {
+      params.append(prefix, String(value));
+    }
+  };
+  for (const [k, v] of Object.entries(body)) flatten(k, v);
+  return params.toString();
+}
+
+// ------------- Google Sheets helpers -------------
 function getJwtClient() {
   const clientEmail = process.env.GOOGLE_SA_EMAIL;
   const privateKey = process.env.GOOGLE_SA_PRIVATE_KEY?.replace(/\\n/g, '\n');
@@ -50,7 +90,8 @@ function getJwtClient() {
 async function appendToSheet(
   values: (string | number | boolean)[],
 ): Promise<void> {
-  const sheetId = process.env.GOOGLE_SHEET_ID!;
+  const sheetId = process.env.GOOGLE_SHEET_ID;
+  if (!sheetId) throw new Error('Missing GOOGLE_SHEET_ID');
   const tab = process.env.GOOGLE_SHEET_TAB || 'Sheet1';
 
   const auth = getJwtClient();
@@ -64,26 +105,7 @@ async function appendToSheet(
   });
 }
 
-// -------- Bitrix helpers --------
-function isRecord(x: unknown): x is Record<string, unknown> {
-  return typeof x === 'object' && x !== null;
-}
-function isBitrixSuccess(x: unknown): x is BitrixLeadAddSuccess {
-  return isRecord(x) && typeof x.result === 'number';
-}
-function parseJson(text: string): unknown {
-  try {
-    return JSON.parse(text);
-  } catch {
-    // keep it explicit for error context
-    throw new Error(`Bitrix returned non-JSON: ${text.slice(0, 200)}`);
-  }
-}
-
-/**
- * Send lead to Bitrix24 via webhook.
- * Docs: https://apidocs.bitrix24.com/api-reference/crm/leads/crm-lead-add.html
- */
+// ------------- Bitrix helpers -------------
 async function sendToBitrix(
   payload: LeadPayload,
   timestampISO: string,
@@ -91,75 +113,86 @@ async function sendToBitrix(
   const endpoint = process.env.BITRIX_WEBHOOK_URL;
   if (!endpoint) throw new Error('Missing BITRIX_WEBHOOK_URL');
 
-  const fullPhone = `${payload.dialCode} ${payload.phone}`.trim();
+  const fullPhone = normalizePhone(payload.dialCode, payload.phone);
   const title =
     `Website Lead – ${payload.firstName} ${payload.lastName}`.trim();
 
-  const commentsLines = [
-    `Source Path: ${payload.path ?? ''}`,
-    `Preferred Language: ${payload.language ?? ''}`,
-    `Golden Visa: ${payload.goldenVisa ? 'Yes' : 'No'}`,
-    `Consent: ${payload.consent ? 'Yes' : 'No'}`,
-    `Submitted At: ${timestampISO}`,
-  ];
-
-  const body: BitrixLeadAddRequest = {
-    fields: {
-      TITLE: title,
-      NAME: payload.firstName,
-      LAST_NAME: payload.lastName,
-      PHONE: [{ VALUE: fullPhone, VALUE_TYPE: 'WORK' }],
-      EMAIL: [{ VALUE: payload.email, VALUE_TYPE: 'WORK' }],
-      SOURCE_ID: 'WEB',
-      COMMENTS: commentsLines.join('\n'),
-    },
+  const fields: BitrixLeadAddRequest['fields'] = {
+    TITLE: title,
+    NAME: payload.firstName,
+    LAST_NAME: payload.lastName,
+    PHONE: [{ VALUE: fullPhone, VALUE_TYPE: 'WORK' }],
+    EMAIL: [{ VALUE: payload.email, VALUE_TYPE: 'WORK' }],
+    SOURCE_ID: 'WEB',
+    COMMENTS: [
+      `Source Path: ${payload.path ?? ''}`,
+      `Preferred Language: ${payload.language ?? ''}`,
+      `Golden Visa: ${payload.goldenVisa ? 'Yes' : 'No'}`,
+      `Consent: ${payload.consent ? 'Yes' : 'No'}`,
+      `Submitted At: ${timestampISO}`,
+    ].join('\n'),
   };
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12000);
+  const url = `${endpoint}crm.lead.add.json`;
 
-  try {
-    const res = await fetch(`${endpoint}crm.lead.add.json`, {
+  // Attempt 1: JSON
+  {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ fields }),
       signal: controller.signal,
-    });
-    clearTimeout(timeout);
+    }).finally(() => clearTimeout(timeout));
+
+    const text = await res.text();
+    let json: unknown;
+    try {
+      json = parseJson(text);
+      if (res.ok && isBitrixSuccess(json)) {
+        return { ok: true, leadId: (json as BitrixLeadAddSuccess).result };
+      }
+      // fall through to form retry below
+    } catch {
+      // fall through to form retry below
+    }
+  }
+
+  // Attempt 2: application/x-www-form-urlencoded
+  {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: toFormUrlEncoded({ fields }),
+      signal: controller.signal,
+    }).finally(() => clearTimeout(timeout));
 
     const text = await res.text();
     const json = parseJson(text);
 
-    // Bitrix often returns 200 even on logical errors. Inspect the shape.
-    if (isBitrixSuccess(json)) {
-      return { ok: true, leadId: json.result };
+    if (res.ok && isBitrixSuccess(json)) {
+      return { ok: true, leadId: (json as BitrixLeadAddSuccess).result };
     }
 
-    // Extract error shape safely (no `any`)
-    const errObj: BitrixErrorShape = isRecord(json)
-      ? {
-          error: typeof json.error === 'string' ? json.error : undefined,
-          error_description:
-            typeof json.error_description === 'string'
-              ? json.error_description
-              : undefined,
-        }
-      : {};
-
     const errMsg =
-      errObj.error_description || errObj.error || `HTTP ${res.status}`;
-    throw new Error(`Bitrix error: ${errMsg}`);
-  } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : 'Bitrix request failed';
-    throw new Error(msg);
+      (isRecord(json) &&
+        typeof json.error_description === 'string' &&
+        json.error_description) ||
+      (isRecord(json) && typeof json.error === 'string' && json.error) ||
+      `HTTP ${res.status} ${text.slice(0, 200)}`;
+    throw new Error(String(errMsg));
   }
 }
 
-// -------- Route --------
+// ------------- Route -------------
 export async function POST(req: Request) {
   try {
     const data = (await req.json()) as LeadPayload;
 
+    // Basic validation (keep visitor UX clean by handling here)
     if (
       !data.firstName ||
       !data.lastName ||
@@ -178,12 +211,19 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+    // Lightweight email sanity
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      return NextResponse.json(
+        { ok: false, error: 'Invalid email' },
+        { status: 400 },
+      );
+    }
 
     const timestamp = new Date().toISOString();
-    const fullPhone = `${data.dialCode} ${data.phone}`.trim();
+    const fullPhone = normalizePhone(data.dialCode, data.phone);
 
-    // 1) Always write to Google Sheets (SoR)
-    const row: (string | number | boolean)[] = [
+    // 1) Always save to Google Sheets (system of record)
+    await appendToSheet([
       timestamp,
       data.firstName,
       data.lastName,
@@ -195,22 +235,24 @@ export async function POST(req: Request) {
       data.goldenVisa ? 'TRUE' : 'FALSE',
       data.consent ? 'TRUE' : 'FALSE',
       data.path || '',
-    ];
-    await appendToSheet(row);
+    ]);
 
-    // 2) Try Bitrix; do not block Sheets on Bitrix failure
+    // 2) Push to Bitrix (non-blocking for visitor)
     let bitrixOk = false;
     let bitrixLeadId: number | null = null;
+    let bitrixError: string | null = null;
+
     try {
-      const bitrixRes = await sendToBitrix(data, timestamp);
-      bitrixOk = bitrixRes.ok;
-      bitrixLeadId = bitrixRes.leadId;
+      const res = await sendToBitrix(data, timestamp);
+      bitrixOk = res.ok;
+      bitrixLeadId = res.leadId;
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Unknown Bitrix error';
-      console.error('Bitrix send error:', msg);
-      bitrixOk = false;
+      bitrixError = e instanceof Error ? e.message : 'Unknown Bitrix error';
+      // Keep logs for you; do not expose to visitor
+      console.error('Bitrix send error:', bitrixError);
     }
 
+    // Keep response simple for visitors; flags help you debug in Network tab
     return NextResponse.json(
       { ok: true, bitrixOk, bitrixLeadId },
       { status: 200 },
