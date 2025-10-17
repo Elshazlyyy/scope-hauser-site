@@ -69,11 +69,6 @@ export default function RegisterModal({
 
     try {
       const endpoint = '/api/lead';
-      if (!endpoint) {
-        throw new Error(
-          'Missing NEXT_PUBLIC_GSHEET_WEBAPP_URL. Add it to your .env.local and redeploy.',
-        );
-      }
 
       const payload = {
         ...data,
@@ -95,21 +90,48 @@ export default function RegisterModal({
       clearTimeout(timeout);
 
       if (!res.ok) {
-        const text = await res.text().catch(() => '');
-        throw new Error(
-          text || `Google Sheets endpoint returned ${res.status}`,
-        );
+        // Try to surface server message if present
+        let serverMsg = '';
+        try {
+          const t = await res.text();
+          serverMsg = t;
+        } catch {
+          /* ignore */
+        }
+        throw new Error(serverMsg || `Lead endpoint returned ${res.status}`);
+      }
+
+      // --- New: read Bitrix status from API response
+      type ApiResponse = {
+        ok: boolean;
+        bitrixOk?: boolean;
+        bitrixLeadId?: number | null;
+      };
+      let bitrixOk = true;
+      try {
+        const json: ApiResponse = await res.json();
+        bitrixOk = typeof json.bitrixOk === 'boolean' ? json.bitrixOk : true;
+      } catch {
+        // If parsing fails, keep normal success UX
+        bitrixOk = true;
       }
 
       setSubmitState({
         status: 'success',
-        message: 'Thanks! Your details were submitted successfully.',
+        message: bitrixOk
+          ? 'Thanks! Your details were submitted successfully.'
+          : 'Thanks! Saved. (Heads-up: CRM sync will retry shortly.)',
       });
+
       reset({
         dialCode: '+971',
         language: '',
         goldenVisa: false,
         consent: false,
+        firstName: '',
+        lastName: '',
+        phone: '',
+        email: '',
       });
     } catch (e: unknown) {
       const msg =
@@ -118,7 +140,10 @@ export default function RegisterModal({
           : 'Something went wrong. Please try again in a moment.';
       setSubmitState({
         status: 'error',
-        message: `Could not submit your details. ${msg}`,
+        message:
+          msg.includes('The user aborted a request') || msg.includes('aborted')
+            ? 'Request timed out. Please try again.'
+            : `Could not submit your details. ${msg}`,
       });
     }
   }
